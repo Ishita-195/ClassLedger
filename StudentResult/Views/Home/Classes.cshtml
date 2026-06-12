@@ -1,0 +1,119 @@
+@model StudentResult.Models.StudentResultVM
+@{
+    ViewData["Title"] = "Classes & Subjects";
+}
+
+<h4 class="fw-bold mb-4" style="color:#1a3c5e;">🏫 Classes & Subjects</h4>
+
+<div class="row g-4">
+    <!-- Classes -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Classes</span>
+                <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addClassModal">+ Add</button>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>ID</th><th>Class</th><th>Section</th></tr></thead>
+                    <tbody>
+                        @foreach (var c in Model.AllClasses)
+                        {
+                            <tr>
+                                <td>@c.Classid</td>
+                                <td>@c.Classname</td>
+                                <td>@c.Section</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subjects -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Subjects</span>
+                <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addSubjectModal">+ Add</button>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>ID</th><th>Subject</th><th>Class ID</th></tr></thead>
+                    <tbody>
+                        @foreach (var s in Model.AllSubjects)
+                        {
+                            <tr>
+                                <td>@s.Subjectid</td>
+                                <td>@s.Subjectname</td>
+                                <td>@s.Classid</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Class Modal -->
+<div class="modal fade" id="addClassModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#1a3c5e; color:white;">
+                <h5 class="modal-title">Add Class</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AddClass" method="get">
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Class Name</label>
+                        <input name="SrClassesObj.Classname" class="form-control" placeholder="e.g. 10th" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Section</label>
+                        <input name="SrClassesObj.Section" class="form-control" placeholder="e.g. A" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Subject Modal -->
+<div class="modal fade" id="addSubjectModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#1a3c5e; color:white;">
+                <h5 class="modal-title">Add Subject</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AddSubject" method="get">
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Subject Name</label>
+                        <input name="SrSubjectsObj.Subjectname" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Class</label>
+                        <select name="SrSubjectsObj.Classid" class="form-select">
+                            @foreach (var c in Model.AllClasses)
+                            {
+                                <option value="@c.Classid">@c.Classname - @c.Section</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

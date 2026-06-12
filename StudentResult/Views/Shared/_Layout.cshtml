@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Student Result System</title>
+    <link rel="stylesheet" href="~/css/bootstrap_min_css_5.2.3/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body { background-color: #f0f4f8; }
+        .navbar { background-color: #1a3c5e !important; }
+        .navbar-brand, .nav-link { color: #ffffff !important; }
+        .nav-link:hover { color: #ffc107 !important; }
+        .sidebar { background: #1a3c5e; min-height: 100vh; padding-top: 20px; }
+        .sidebar a { color: #cdd9e5; display: block; padding: 10px 20px; text-decoration: none; border-radius: 6px; margin: 4px 10px; }
+        .sidebar a:hover, .sidebar a.active { background: #ffc107; color: #1a3c5e; font-weight: 600; }
+        .sidebar .sidebar-heading { color: #7a99b8; font-size: 11px; text-transform: uppercase; padding: 12px 20px 4px; letter-spacing: 1px; }
+        .main-content { padding: 30px; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .card-header { border-radius: 12px 12px 0 0 !important; background-color: #1a3c5e; color: white; }
+        .stat-card { border-radius: 12px; padding: 20px; color: white; }
+        .btn-primary { background-color: #1a3c5e; border-color: #1a3c5e; }
+        .btn-primary:hover { background-color: #ffc107; border-color: #ffc107; color: #1a3c5e; }
+        .table thead { background-color: #1a3c5e; color: white; }
+        .badge-present { background-color: #28a745; }
+        .badge-absent  { background-color: #dc3545; }
+        .badge-leave   { background-color: #ffc107; color: #333; }
+    </style>
+</head>
+<body>
+    @if (Context.Session.GetString("UserID") != null)
+    {
+        <div class="d-flex">
+            <!-- Sidebar -->
+            <div class="sidebar" style="width:220px; min-width:220px;">
+                <div class="text-center mb-3">
+                    <span style="color:#ffc107; font-size:1.3rem; font-weight:700;">🎓 SRS</span>
+                    <div style="color:#7a99b8; font-size:12px;">Student Result System</div>
+                </div>
+                <hr style="border-color:#2e5a80; margin:0 10px 10px;">
+
+                <div class="sidebar-heading">Main</div>
+                <a asp-action="Dashboard" asp-controller="Home">🏠 Dashboard</a>
+
+                @if (Context.Session.GetString("UserRole") == "Admin" || Context.Session.GetString("UserRole") == "Teacher")
+                {
+                    <div class="sidebar-heading">Manage</div>
+                    <a asp-action="Students"   asp-controller="Home">👨‍🎓 Students</a>
+                    <a asp-action="Marks"      asp-controller="Home">📝 Marks</a>
+                    <a asp-action="Attendance" asp-controller="Home">📅 Attendance</a>
+                }
+
+                @if (Context.Session.GetString("UserRole") == "Admin")
+                {
+                    <a asp-action="Classes" asp-controller="Home">🏫 Classes & Subjects</a>
+                }
+
+                @if (Context.Session.GetString("UserRole") == "Student")
+                {
+                    <div class="sidebar-heading">My Portal</div>
+                    <a asp-action="ReportCard" asp-controller="Home">📊 My Report Card</a>
+                    <a asp-action="Attendance" asp-controller="Home">📅 My Attendance</a>
+                }
+
+                <hr style="border-color:#2e5a80; margin:10px;">
+                <a asp-action="Logout" asp-controller="Home" style="color:#ff6b6b !important;">🚪 Logout (@Context.Session.GetString("UserName"))</a>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-grow-1 main-content">
+                @RenderBody()
+            </div>
+        </div>
+    }
+    else
+    {
+        @RenderBody()
+    }
+
+    <script src="~/js/jquery-3.6.1.min.js"></script>
+    <script src="~/js/Bootstrap_min_js_5.2.3/bootstrap.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

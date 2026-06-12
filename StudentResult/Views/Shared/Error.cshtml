@@ -1,0 +1,13 @@
+@model StudentResult.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="text-center mt-5">
+    <h2 style="color:#dc3545;">⚠️ Something went wrong</h2>
+    @if (Model.ShowRequestId)
+    {
+        <p class="text-muted">Request ID: <code>@Model.RequestId</code></p>
+    }
+    <a asp-action="Dashboard" class="btn btn-primary mt-3">Back to Dashboard</a>
+</div>

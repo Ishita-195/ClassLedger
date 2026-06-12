@@ -1,0 +1,58 @@
+@model StudentResult.Models.StudentResultVM
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login — Student Result System</title>
+    <link rel="stylesheet" href="~/css/bootstrap_min_css_5.2.3/bootstrap.min.css" />
+    <style>
+        body { background: linear-gradient(135deg, #1a3c5e 0%, #2e7d9e 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .login-title { color: #1a3c5e; font-weight: 700; font-size: 1.6rem; }
+        .btn-login { background-color: #1a3c5e; color: white; width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 1rem; }
+        .btn-login:hover { background-color: #ffc107; color: #1a3c5e; }
+        .form-control:focus { border-color: #1a3c5e; box-shadow: 0 0 0 0.2rem rgba(26,60,94,0.25); }
+        .role-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; margin: 2px; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <div style="font-size:3rem;">🎓</div>
+            <div class="login-title">Student Result System</div>
+            <div class="text-muted" style="font-size:13px;">Sign in to your account</div>
+        </div>
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-danger py-2">@ViewBag.Message</div>
+        }
+
+        <form asp-action="doLogin" asp-controller="Home" method="get">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Email Address</label>
+                <input name="SrUsersObj.Useremail" type="email" class="form-control" placeholder="Enter your email" required />
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Password</label>
+                <input name="SrUsersObj.Userpassword" type="password" class="form-control" placeholder="Enter your password" required />
+            </div>
+            <button type="submit" class="btn-login">Sign In</button>
+        </form>
+
+        <div class="mt-4 p-3 bg-light rounded" style="font-size:12px;">
+            <div class="fw-bold mb-1 text-muted">Demo Accounts:</div>
+            <div>Admin: admin@school.com / admin123</div>
+            <div>Teacher: sharma@school.com / teacher123</div>
+            <div>Student: ravi@student.com / ravi123</div>
+        </div>
+    </div>
+    <script src="~/js/jquery-3.6.1.min.js"></script>
+    <script src="~/js/Bootstrap_min_js_5.2.3/bootstrap.min.js"></script>
+</body>
+</html>
