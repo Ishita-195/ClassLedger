@@ -1,10 +1,7 @@
 # Student Result & Attendance System
 
-A full-stack ASP.NET Core MVC web application built during my IT internship at **F. O. Parade Limited Corporation** (May 2025) to digitize student academic record management — attendance tracking, result entry, and role-based dashboards backed by Oracle DB.
+A full-stack ASP.NET Core MVC web application built during my IT internship at **IFFCO Paradeep Limited Corporation** (May 2025) to digitize student academic record management — attendance tracking, result entry, and role-based dashboards backed by Oracle DB.
 
-[![Live Demo](https://img.shields.io/badge/🖥️_Internship_Project-F.O._Parade_Limited-4A90D9?style=for-the-badge)](https://github.com/Ishita-195/student-attendance-system)
-
----
 
 ## Project Overview
 
@@ -239,7 +236,7 @@ SELECT USERNAME, USERROLE FROM SR_USERS;
 
 ## Internship Context
 
-Built as part of a one-month IT internship at **F. O. Parade Limited Corporation** in May 2025. The project provided hands-on experience with enterprise .NET development, Oracle database schema design, and MVC architecture in a real-world organizational setting — mirroring the kind of internal tooling commonly used in corporate IT environments.
+Built as part of a one-month IT internship at **IFFCO Paradeep Limited Corporation** in May 2025. The project provided hands-on experience with enterprise .NET development, Oracle database schema design, and MVC architecture in a real-world organizational setting — mirroring the kind of internal tooling commonly used in corporate IT environments.
 
 ---
 
@@ -255,8 +252,7 @@ You now have a **complete, role-based academic management system** that:
 ✅ **Ready** to extend with reporting or notifications
 
 ---
-
-**Build Date**: May 2025  
+  
 **Framework**: ASP.NET Core MVC + Oracle DB  
 **Status**: ✅ Complete — Internship Deliverable
 
