@@ -254,7 +254,7 @@ You now have a **complete, role-based academic management system** that:
 ---
   
 **Framework**: ASP.NET Core MVC + Oracle DB  
-**Status**: ✅ Complete — Internship Deliverable
+**Status**: Complete — Internship Deliverable
 
 ---
 
