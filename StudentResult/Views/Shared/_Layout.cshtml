@@ -53,6 +53,8 @@
                 @if (Context.Session.GetString("UserRole") == "Admin")
                 {
                     <a asp-action="Classes" asp-controller="Home">🏫 Classes & Subjects</a>
+                    <div class="sidebar-heading">Analytics</div>
+                    <a asp-action="Index" asp-controller="Reports">📈 Reports</a>
                 }
 
                 @if (Context.Session.GetString("UserRole") == "Student")
