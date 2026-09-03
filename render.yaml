@@ -3,7 +3,7 @@
 # "New +" → "Blueprint" and point it at this repo.
 services:
   - type: web
-    name: student-result-system
+    name: classledger
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile

@@ -1,4 +1,4 @@
-# Student Result & Attendance System
+# ClassLedger — Student Result & Attendance System
 
 A full-stack ASP.NET Core MVC web application built during my IT internship at **IFFCO Paradeep Limited Corporation** (May 2025) to digitize student academic record management — attendance tracking, result entry, and role-based dashboards backed by Oracle DB.
 
