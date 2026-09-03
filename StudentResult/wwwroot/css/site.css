@@ -49,13 +49,17 @@ body {
 
 .sidebar a {
     color: var(--sidebar-fg);
-    display: block;
-    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 18px;
     text-decoration: none;
     border-radius: 6px;
     margin: 4px 10px;
     transition: background 0.15s, color 0.15s;
 }
+
+.ico { flex: 0 0 auto; }
 
 .sidebar a:hover,
 .sidebar a.active {
@@ -190,7 +194,8 @@ body {
     transform: translateY(-4px);
 }
 
-.stat-card .stat-icon { font-size: 2rem; }
+.stat-card .stat-icon { margin-bottom: 8px; opacity: 0.9; }
+.stat-card .stat-icon .ico { width: 30px; height: 30px; }
 .stat-card .stat-value { font-size: 1.8rem; font-weight: 700; }
 
 .bg-stat-navy  { background: var(--navy); }

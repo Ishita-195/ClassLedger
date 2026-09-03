@@ -6,34 +6,34 @@
     string ClassName(int? id) => id.HasValue && classLabel.TryGetValue(id.Value, out var n) ? n : "—";
 }
 
-<h4 class="mb-4 page-title">📊 Dashboard</h4>
+<h4 class="mb-4 page-title">Dashboard</h4>
 
 <!-- Stat Cards -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="stat-card bg-stat-navy">
-            <div class="stat-icon">👨‍🎓</div>
+            <div class="stat-icon">@await Html.PartialAsync("_Icon", "students")</div>
             <div class="stat-value">@Model.TotalStudents</div>
             <div>Total Students</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card bg-stat-teal">
-            <div class="stat-icon">🏫</div>
+            <div class="stat-icon">@await Html.PartialAsync("_Icon", "layers")</div>
             <div class="stat-value">@Model.TotalClasses</div>
             <div>Classes</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card bg-stat-green">
-            <div class="stat-icon">✅</div>
+            <div class="stat-icon">@await Html.PartialAsync("_Icon", "check")</div>
             <div class="stat-value">@Model.TotalPresent</div>
             <div>Present Records</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="stat-card bg-stat-red">
-            <div class="stat-icon">❌</div>
+            <div class="stat-icon">@await Html.PartialAsync("_Icon", "xmark")</div>
             <div class="stat-value">@Model.TotalAbsent</div>
             <div>Absent Records</div>
         </div>

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] — ClassLedger</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2317516b'/><text x='50' y='70' font-family='Segoe UI,Arial,sans-serif' font-size='54' font-weight='700' fill='white' text-anchor='middle'>CL</text></svg>" />
     <link rel="stylesheet" href="~/css/bootstrap_min_css_5.2.3/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -19,8 +19,12 @@
 
         <!-- Mobile top bar -->
         <div class="mobile-topbar d-md-none d-flex align-items-center justify-content-between">
-            <button class="btn btn-sm" id="sidebarToggle" aria-label="Menu">☰</button>
-            <span class="brand">📒 ClassLedger</span>
+            <button class="btn btn-sm" id="sidebarToggle" aria-label="Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <span class="brand d-inline-flex align-items-center gap-2">
+                @await Html.PartialAsync("_Icon", "book")<span>ClassLedger</span>
+            </span>
             <span style="width:36px;"></span>
         </div>
 
@@ -30,38 +34,40 @@
             <!-- Sidebar -->
             <div class="sidebar" id="sidebarMenu">
                 <div class="text-center mb-3">
-                    <span class="sidebar-brand">📒 ClassLedger</span>
+                    <span class="sidebar-brand d-inline-flex align-items-center justify-content-center gap-2">
+                        @await Html.PartialAsync("_Icon", "book")<span>ClassLedger</span>
+                    </span>
                     <div class="sidebar-brand-sub">Attendance &amp; Results</div>
                 </div>
                 <hr class="sidebar-divider" style="margin:0 10px 10px;">
 
                 <div class="sidebar-heading">Main</div>
-                <a class="@navActive("Home", "Dashboard")" asp-action="Dashboard" asp-controller="Home">🏠 Dashboard</a>
+                <a class="@navActive("Home", "Dashboard")" asp-action="Dashboard" asp-controller="Home">@await Html.PartialAsync("_Icon", "dashboard")<span>Dashboard</span></a>
 
                 @if (role == "Admin" || role == "Teacher")
                 {
                     <div class="sidebar-heading">Manage</div>
-                    <a class="@navActive("Home", "Students")"   asp-action="Students"   asp-controller="Home">👨‍🎓 Students</a>
-                    <a class="@navActive("Home", "Marks")"      asp-action="Marks"      asp-controller="Home">📝 Marks</a>
-                    <a class="@navActive("Home", "Attendance")" asp-action="Attendance" asp-controller="Home">📅 Attendance</a>
+                    <a class="@navActive("Home", "Students")"   asp-action="Students"   asp-controller="Home">@await Html.PartialAsync("_Icon", "students")<span>Students</span></a>
+                    <a class="@navActive("Home", "Marks")"      asp-action="Marks"      asp-controller="Home">@await Html.PartialAsync("_Icon", "marks")<span>Marks</span></a>
+                    <a class="@navActive("Home", "Attendance")" asp-action="Attendance" asp-controller="Home">@await Html.PartialAsync("_Icon", "attendance")<span>Attendance</span></a>
                 }
 
                 @if (role == "Admin")
                 {
-                    <a class="@navActive("Home", "Classes")" asp-action="Classes" asp-controller="Home">🏫 Classes & Subjects</a>
+                    <a class="@navActive("Home", "Classes")" asp-action="Classes" asp-controller="Home">@await Html.PartialAsync("_Icon", "classes")<span>Classes &amp; Subjects</span></a>
                     <div class="sidebar-heading">Analytics</div>
-                    <a class="@navActive("Reports", "Index")" asp-action="Index" asp-controller="Reports">📈 Reports</a>
+                    <a class="@navActive("Reports", "Index")" asp-action="Index" asp-controller="Reports">@await Html.PartialAsync("_Icon", "reports")<span>Reports</span></a>
                 }
 
                 @if (role == "Student")
                 {
                     <div class="sidebar-heading">My Portal</div>
-                    <a class="@navActive("Home", "ReportCard")" asp-action="ReportCard" asp-controller="Home">📊 My Report Card</a>
-                    <a class="@navActive("Home", "Attendance")" asp-action="Attendance" asp-controller="Home">📅 My Attendance</a>
+                    <a class="@navActive("Home", "ReportCard")" asp-action="ReportCard" asp-controller="Home">@await Html.PartialAsync("_Icon", "reportcard")<span>My Report Card</span></a>
+                    <a class="@navActive("Home", "Attendance")" asp-action="Attendance" asp-controller="Home">@await Html.PartialAsync("_Icon", "attendance")<span>My Attendance</span></a>
                 }
 
                 <hr class="sidebar-divider" style="margin:10px;">
-                <a class="sidebar-logout" asp-action="Logout" asp-controller="Home">🚪 Logout (@Context.Session.GetString("UserName"))</a>
+                <a class="sidebar-logout" asp-action="Logout" asp-controller="Home">@await Html.PartialAsync("_Icon", "logout")<span>Logout (@Context.Session.GetString("UserName"))</span></a>
             </div>
 
             <!-- Main Content -->
