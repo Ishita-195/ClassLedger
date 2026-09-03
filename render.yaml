@@ -1,0 +1,12 @@
+# Render Blueprint — free Docker web service.
+# Deploy: push to GitHub, then in the Render dashboard choose
+# "New +" → "Blueprint" and point it at this repo.
+services:
+  - type: web
+    name: student-result-system
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeploy: true
+    healthCheckPath: /Home/Login

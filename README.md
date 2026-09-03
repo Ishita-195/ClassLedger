@@ -167,6 +167,35 @@ SR_ATTENDANCE  → Daily attendance per student per class
 | Enter exam marks         | ✅    | ✅      | ❌      |
 | View own results         | ✅    | ✅      | ✅      |
 | View own attendance      | ✅    | ✅      | ✅      |
+| Analytics dashboard      | ✅    | ❌      | ❌      |
+
+---
+
+## Analytics Dashboard (Admin)
+
+An admin-only analytics dashboard visualizes academic trends across the school.
+It lives at **`/Reports`** (sidebar → *Analytics → Reports*) and is guarded by the
+same session-based role check used elsewhere — non-admins are redirected away.
+
+Charts are rendered with **[Chart.js](https://www.chartjs.org/)**, served **locally**
+from `wwwroot/js/chartjs/chart.umd.min.js` (no external CDN). Each chart is backed by
+a single **`GROUP BY` aggregation query** run directly against the Oracle schema, so the
+database does the aggregation and only compact result sets reach the app (no in-memory
+LINQ over full tables). Every chart has its own ViewModel (see `Models/ReportsVM.cs`).
+
+| Chart | Question it answers | Aggregation source |
+|-------|---------------------|--------------------|
+| Attendance % distribution | How are students spread across attendance bands? | Per-student present/total %, bucketed, over `SR_ATTENDANCE` |
+| Pass / fail per course | Which subjects have the most failures? | Pass = scored ≥ 40% of total, grouped by subject over `SR_MARKS` |
+| Grade / marks distribution | What's the overall grade spread? | Mark % bucketed into A–F bands over `SR_MARKS` |
+| Avg attendance vs avg result | Does attendance correlate with results? | Per-student avg attendance % vs avg result % (scatter) |
+
+### Screenshot
+
+<!-- Replace the placeholder below with an actual screenshot of the /Reports dashboard -->
+![Analytics dashboard screenshot placeholder](docs/screenshots/reports-dashboard.png)
+
+> _Screenshot placeholder — capture the `/Reports` page while logged in as Admin and save it to `docs/screenshots/reports-dashboard.png`._
 
 ---
 
@@ -226,7 +255,7 @@ SELECT USERNAME, USERROLE FROM SR_USERS;
 ## Technology Stack
 
 - **Backend**: ASP.NET Core MVC (C#)
-- **Frontend**: HTML, CSS (Razor Views)
+- **Frontend**: HTML, CSS (Razor Views), Chart.js (vendored locally) for analytics charts
 - **Database**: Oracle DB
 - **DB Access**: ADO.NET + Oracle Data Provider for .NET (ODP.NET)
 - **IDE**: Visual Studio 2022
