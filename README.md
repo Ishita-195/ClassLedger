@@ -8,8 +8,6 @@ A role-based web application for schools to digitize student academic records �
   </a>
 </p>
 
-> Sign in with a demo account from the [Demo Accounts](#demo-accounts) table. Hosted on Render's free tier — the first request after idle may take ~30–50s to wake.
-
 ---
 
 ## About
