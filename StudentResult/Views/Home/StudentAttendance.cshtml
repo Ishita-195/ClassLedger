@@ -1,0 +1,165 @@
+@model StudentResult.Models.StudentAttendanceVM
+@{
+    ViewData["Title"] = "Attendance — " + Model.Student.Studentname;
+    var role = Context.Session.GetString("UserRole");
+    var canEdit = role == "Admin" || role == "Teacher";
+    var classText = Model.Class != null ? $"{Model.Class.Classname} - {Model.Class.Section}" : "—";
+
+    string Initials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var p = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return p.Length == 1 ? p[0].Substring(0, 1).ToUpper()
+             : (p[0].Substring(0, 1) + p[p.Length - 1].Substring(0, 1)).ToUpper();
+    }
+    var pctColor = Model.Percentage >= 75 ? "var(--green)" : Model.Percentage >= 50 ? "var(--amber)" : "var(--red)";
+}
+
+<a asp-action="Attendance" class="back-link">← Back to students</a>
+
+<!-- Student header + month picker -->
+<div class="card">
+    <div class="card-body d-flex align-items-center flex-wrap gap-3">
+        <div class="avatar avatar-lg">@Initials(Model.Student.Studentname)</div>
+        <div class="flex-grow-1">
+            <h4 class="page-title mb-1">@Model.Student.Studentname</h4>
+            <div class="text-muted">Roll @Model.Student.Rollno · Class @classText</div>
+        </div>
+        @if (Model.AvailableMonths.Any())
+        {
+            <div>
+                <label class="form-label text-muted mb-1" style="font-size:12px;">MONTH</label>
+                <select class="form-select" id="monthPicker" data-id="@Model.Student.Studentid">
+                    @foreach (var mo in Model.AvailableMonths)
+                    {
+                        <option value="@mo.Year-@mo.Month" selected="@mo.Selected">@mo.Label</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="alert alert-info">No attendance records for @Model.MonthName.</div>
+}
+else
+{
+    <div class="row g-3 mb-1">
+        <!-- Stat tiles -->
+        <div class="col-lg-7">
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="metric"><div class="metric-label">Present</div><div class="metric-value" style="color:var(--green);">@Model.Present</div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric"><div class="metric-label">Absent</div><div class="metric-value" style="color:var(--red);">@Model.Absent</div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric"><div class="metric-label">Leave</div><div class="metric-value" style="color:var(--amber);">@Model.Leave</div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="metric"><div class="metric-label">Working Days</div><div class="metric-value">@Model.TotalDays</div></div>
+                </div>
+                <div class="col-12">
+                    <div class="metric">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="metric-label">Attendance Rate — @Model.MonthName</span>
+                            <span class="fw-bold" style="color:@pctColor;">@Model.Percentage%</span>
+                        </div>
+                        <div class="progress" style="height:12px;">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width:@Model.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%; background:@pctColor;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doughnut chart -->
+        <div class="col-lg-5">
+            <div class="card h-100 mb-0">
+                <div class="card-header"><h6 class="mb-0">Breakdown — @Model.MonthName</h6></div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <canvas id="attnChart" height="240"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (canEdit)
+{
+    <div class="card mt-3">
+        <div class="card-header"><h6 class="mb-0">Mark Attendance</h6></div>
+        <div class="card-body">
+            <form asp-action="MarkAttendance" method="post" class="row g-2 align-items-end">
+                <input type="hidden" name="SrAttendanceObj.Studentid" value="@Model.Student.Studentid" />
+                <input type="hidden" name="SrAttendanceObj.Classid" value="@Model.Student.Classid" />
+                <div class="col-sm-4">
+                    <label class="form-label">Date</label>
+                    <input name="SrAttendanceObj.Attenddate" type="date" class="form-control" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label">Status</label>
+                    <select name="SrAttendanceObj.Status" class="form-select">
+                        <option>Present</option>
+                        <option>Absent</option>
+                        <option>Leave</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <button type="submit" class="btn btn-primary w-100">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/js/chartjs/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            var el = document.getElementById('monthPicker');
+            if (el) {
+                el.addEventListener('change', function () {
+                    var parts = this.value.split('-');
+                    var id = this.getAttribute('data-id');
+                    window.location.href = '/Home/StudentAttendance?id=' + id + '&year=' + parts[0] + '&month=' + parts[1];
+                });
+            }
+
+            var canvas = document.getElementById('attnChart');
+            if (canvas) {
+                new Chart(canvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Present', 'Absent', 'Leave'],
+                        datasets: [{
+                            data: [@Model.Present, @Model.Absent, @Model.Leave],
+                            backgroundColor: ['#4c8577', '#b0525f', '#c99a3f'],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        cutout: '62%',
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (ctx) {
+                                        var total = ctx.dataset.data.reduce(function (a, b) { return a + b; }, 0);
+                                        var pct = total ? Math.round(ctx.parsed / total * 100) : 0;
+                                        return ctx.label + ': ' + ctx.parsed + ' (' + pct + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
+}

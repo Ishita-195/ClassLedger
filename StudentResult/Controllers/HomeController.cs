@@ -115,19 +115,72 @@ namespace StudentResult.Controllers
         }
 
         // ─────────────────────────────────────────
-        // MARKS / RESULTS
+        // MARKS / RESULTS  (master → detail)
         // ─────────────────────────────────────────
 
+        // Master: pick a student.
         public IActionResult Marks()
         {
             if (HttpContext.Session.GetString("UserID") == null)
                 return RedirectToAction("Login");
 
-            StudentResultVM obj = new StudentResultVM();
-            obj.AllMarks    = _context.SrMarks.OrderByDescending(m => m.Markid).ToList();
-            obj.AllStudents = _context.SrStudents.ToList();
-            obj.AllSubjects = _context.SrSubjects.ToList();
+            var obj = new StudentResultVM
+            {
+                AllStudents = _context.SrStudents.OrderBy(s => s.Studentname).ToList(),
+                AllClasses  = _context.SrClasses.ToList()
+            };
             return View(obj);
+        }
+
+        // Detail: one student's marks across all subjects, with statistics.
+        public IActionResult StudentMarks(int id)
+        {
+            if (HttpContext.Session.GetString("UserID") == null)
+                return RedirectToAction("Login");
+
+            var student = _context.SrStudents.Find(id);
+            if (student == null)
+                return RedirectToAction("Marks");
+
+            var subjects = _context.SrSubjects.OrderBy(s => s.Subjectid).ToList();
+            var marks = _context.SrMarks.Where(m => m.Studentid == id).ToList();
+
+            var vm = new StudentMarksVM
+            {
+                Student  = student,
+                Class    = _context.SrClasses.FirstOrDefault(c => c.Classid == student.Classid),
+                Subjects = subjects
+            };
+
+            foreach (var sub in subjects)
+            {
+                var entry = marks.Where(m => m.Subjectid == sub.Subjectid)
+                                 .OrderByDescending(m => m.Markid)
+                                 .FirstOrDefault();
+                var row = new SubjectMarkRow { Subject = sub.Subjectname };
+                if (entry != null && entry.Totalmarks > 0)
+                {
+                    row.Recorded   = true;
+                    row.Markid     = entry.Markid;
+                    row.Scored     = entry.Marksscored;
+                    row.Total      = entry.Totalmarks;
+                    row.Percentage = Math.Round((decimal)(entry.Marksscored / entry.Totalmarks * 100), 1);
+                    row.Grade      = Grade(row.Percentage);
+                }
+                vm.Rows.Add(row);
+            }
+
+            var recorded = vm.Rows.Where(r => r.Recorded).ToList();
+            vm.SubjectsRecorded   = recorded.Count;
+            vm.TotalScored        = recorded.Sum(r => r.Scored ?? 0);
+            vm.TotalMax           = recorded.Sum(r => r.Total ?? 0);
+            vm.OverallPercentage  = vm.TotalMax > 0 ? Math.Round(vm.TotalScored / vm.TotalMax * 100, 1) : 0;
+            vm.AveragePercentage  = recorded.Count > 0 ? Math.Round(recorded.Average(r => r.Percentage), 1) : 0;
+            vm.SubjectsPassed     = recorded.Count(r => r.Percentage >= 40);
+            vm.OverallGrade       = Grade(vm.OverallPercentage);
+            (vm.Performance, vm.PerformanceColor) = PerformanceLabel(vm.OverallPercentage);
+
+            return View(vm);
         }
 
         [HttpPost]
@@ -136,11 +189,11 @@ namespace StudentResult.Controllers
         {
             var m = model.SrMarksObj;
             var maxId = _context.SrMarks.Select(x => x.Markid).DefaultIfEmpty(0).Max();
-            m.Markid    = maxId + 1;
-            m.Examdate  = DateTime.Now;
+            m.Markid   = maxId + 1;
+            m.Examdate = DateTime.Now;
             _context.Add(m);
             _context.SaveChanges();
-            return RedirectToAction("Marks");
+            return RedirectToAction("StudentMarks", new { id = m.Studentid });
         }
 
         [HttpPost]
@@ -148,28 +201,101 @@ namespace StudentResult.Controllers
         public IActionResult DeleteMark(int id)
         {
             var mark = _context.SrMarks.Find(id);
+            int? sid = mark?.Studentid;
             if (mark != null)
             {
                 _context.SrMarks.Remove(mark);
                 _context.SaveChanges();
             }
-            return RedirectToAction("Marks");
+            return sid != null
+                ? RedirectToAction("StudentMarks", new { id = sid })
+                : RedirectToAction("Marks");
         }
 
         // ─────────────────────────────────────────
-        // ATTENDANCE
+        // ATTENDANCE  (master → detail)
         // ─────────────────────────────────────────
 
+        // Master: pick a student. Students are redirected to their own record.
         public IActionResult Attendance()
         {
             if (HttpContext.Session.GetString("UserID") == null)
                 return RedirectToAction("Login");
 
-            StudentResultVM obj = new StudentResultVM();
-            obj.AllAttendance = _context.SrAttendance.OrderByDescending(a => a.Attenddate).ToList();
-            obj.AllStudents   = _context.SrStudents.ToList();
-            obj.AllClasses    = _context.SrClasses.ToList();
+            if (HttpContext.Session.GetString("UserRole") == "Student")
+            {
+                var uid = Convert.ToDecimal(HttpContext.Session.GetString("UserID"));
+                var me = _context.SrStudents.FirstOrDefault(s => s.Userid == uid);
+                if (me != null)
+                    return RedirectToAction("StudentAttendance", new { id = me.Studentid });
+            }
+
+            var obj = new StudentResultVM
+            {
+                AllStudents = _context.SrStudents.OrderBy(s => s.Studentname).ToList(),
+                AllClasses  = _context.SrClasses.ToList()
+            };
             return View(obj);
+        }
+
+        // Detail: one student's attendance for a selected month, with stats.
+        public IActionResult StudentAttendance(int id, int? year, int? month)
+        {
+            if (HttpContext.Session.GetString("UserID") == null)
+                return RedirectToAction("Login");
+
+            var student = _context.SrStudents.Find(id);
+            if (student == null)
+                return RedirectToAction("Attendance");
+
+            var records = _context.SrAttendance
+                .Where(a => a.Studentid == id && a.Attenddate != null)
+                .ToList();
+
+            var vm = new StudentAttendanceVM
+            {
+                Student = student,
+                Class   = _context.SrClasses.FirstOrDefault(c => c.Classid == student.Classid)
+            };
+
+            var months = records
+                .Select(a => new { a.Attenddate.Value.Year, a.Attenddate.Value.Month })
+                .Distinct()
+                .OrderByDescending(x => x.Year).ThenByDescending(x => x.Month)
+                .ToList();
+
+            int selYear, selMonth;
+            if (year.HasValue && month.HasValue) { selYear = year.Value; selMonth = month.Value; }
+            else if (months.Any()) { selYear = months.First().Year; selMonth = months.First().Month; }
+            else { selYear = DateTime.Now.Year; selMonth = DateTime.Now.Month; }
+
+            vm.Year = selYear;
+            vm.Month = selMonth;
+            vm.MonthName = new DateTime(selYear, selMonth, 1).ToString("MMMM yyyy");
+
+            foreach (var mo in months)
+            {
+                vm.AvailableMonths.Add(new MonthOption
+                {
+                    Year = mo.Year,
+                    Month = mo.Month,
+                    Label = new DateTime(mo.Year, mo.Month, 1).ToString("MMMM yyyy"),
+                    Selected = mo.Year == selYear && mo.Month == selMonth
+                });
+            }
+
+            var monthRecords = records
+                .Where(a => a.Attenddate.Value.Year == selYear && a.Attenddate.Value.Month == selMonth)
+                .ToList();
+
+            vm.Present   = monthRecords.Count(a => a.Status == "Present");
+            vm.Absent    = monthRecords.Count(a => a.Status == "Absent");
+            vm.Leave     = monthRecords.Count(a => a.Status == "Leave");
+            vm.TotalDays = monthRecords.Count;
+            vm.HasData   = vm.TotalDays > 0;
+            vm.Percentage = vm.TotalDays > 0 ? Math.Round((double)vm.Present / vm.TotalDays * 100, 1) : 0;
+
+            return View(vm);
         }
 
         [HttpPost]
@@ -179,11 +305,25 @@ namespace StudentResult.Controllers
             var a = model.SrAttendanceObj;
             var maxId = _context.SrAttendance.Select(x => x.Attendanceid).DefaultIfEmpty(0).Max();
             a.Attendanceid = maxId + 1;
-            a.Attenddate   = DateTime.Now;
+            if (a.Attenddate == null) a.Attenddate = DateTime.Now;
             _context.Add(a);
             _context.SaveChanges();
-            return RedirectToAction("Attendance");
+            return RedirectToAction("StudentAttendance", new { id = a.Studentid });
         }
+
+        // ── grading helpers ─────────────────────────
+        private static string Grade(decimal pct) =>
+            pct >= 90 ? "A+" :
+            pct >= 75 ? "A"  :
+            pct >= 60 ? "B"  :
+            pct >= 45 ? "C"  :
+            pct >= 40 ? "D"  : "F";
+
+        private static (string Label, string Color) PerformanceLabel(decimal pct) =>
+            pct >= 75 ? ("Excellent", "success") :
+            pct >= 60 ? ("Good", "primary") :
+            pct >= 40 ? ("Average", "warning") :
+                        ("Needs Improvement", "danger");
 
         // ─────────────────────────────────────────
         // REPORT CARD  (student-facing)

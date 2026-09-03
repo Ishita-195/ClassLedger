@@ -1,0 +1,37 @@
+@model StudentResult.Models.StudentResultVM
+@{
+    var detailAction = (string)ViewData["DetailAction"];
+    var verb = (string)ViewData["ActionVerb"] ?? "View";
+    var classLabel = (Model.AllClasses ?? new List<StudentResult.Models.SrClasses>())
+        .ToDictionary(c => c.Classid, c => $"{c.Classname} - {c.Section}");
+    string ClassName(int? id) => id.HasValue && classLabel.TryGetValue(id.Value, out var n) ? n : "—";
+    string Initials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length == 1
+            ? parts[0].Substring(0, 1).ToUpper()
+            : (parts[0].Substring(0, 1) + parts[parts.Length - 1].Substring(0, 1)).ToUpper();
+    }
+}
+
+@if (Model.AllStudents == null || !Model.AllStudents.Any())
+{
+    <div class="alert alert-info">No students yet.</div>
+}
+else
+{
+    <div class="student-grid">
+        @foreach (var s in Model.AllStudents)
+        {
+            <a class="student-card" asp-action="@detailAction" asp-controller="Home" asp-route-id="@s.Studentid">
+                <div class="avatar">@Initials(s.Studentname)</div>
+                <div>
+                    <div class="student-name">@s.Studentname</div>
+                    <div class="student-meta">@s.Rollno · @ClassName(s.Classid)</div>
+                    <div class="student-meta" style="color:var(--navy); font-weight:600;">@verb →</div>
+                </div>
+            </a>
+        }
+    </div>
+}

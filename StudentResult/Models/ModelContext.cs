@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
@@ -126,14 +127,20 @@ namespace StudentResult.Models
                 new SrClasses { Classid = 3, Classname = "9th",  Section = "A" }
             );
 
-            SrSubjects.AddRange(
-                new SrSubjects { Subjectid = 1, Subjectname = "Mathematics", Classid = 1 },
-                new SrSubjects { Subjectid = 2, Subjectname = "Science",     Classid = 1 },
-                new SrSubjects { Subjectid = 3, Subjectname = "English",     Classid = 1 },
-                new SrSubjects { Subjectid = 4, Subjectname = "Mathematics", Classid = 3 }
-            );
+            // Curriculum-wide subjects (the 6 standard subjects, shared by all classes).
+            var subjects = new[]
+            {
+                new SrSubjects { Subjectid = 1, Subjectname = "Physics" },
+                new SrSubjects { Subjectid = 2, Subjectname = "Chemistry" },
+                new SrSubjects { Subjectid = 3, Subjectname = "Hindi" },
+                new SrSubjects { Subjectid = 4, Subjectname = "Math" },
+                new SrSubjects { Subjectid = 5, Subjectname = "Biology" },
+                new SrSubjects { Subjectid = 6, Subjectname = "History" }
+            };
+            SrSubjects.AddRange(subjects);
 
-            SrStudents.AddRange(
+            var students = new[]
+            {
                 new SrStudents { Studentid = 1,  Studentname = "Ravi Kumar",      Rollno = "R001", Classid = 1, Gender = "Male",   Parentname = "Suresh Kumar",     Contactno = "9876543210", Userid = 3 },
                 new SrStudents { Studentid = 2,  Studentname = "Priya Singh",     Rollno = "R002", Classid = 1, Gender = "Female", Parentname = "Ramesh Singh",     Contactno = "9876543211", Userid = 4 },
                 new SrStudents { Studentid = 3,  Studentname = "Aarav Sharma",    Rollno = "R003", Classid = 1, Gender = "Male",   Parentname = "Rohit Sharma",     Contactno = "9812000003" },
@@ -156,22 +163,68 @@ namespace StudentResult.Models
                 new SrStudents { Studentid = 20, Studentname = "Dev Choudhary",   Rollno = "R020", Classid = 1, Gender = "Male",   Parentname = "Ramesh Choudhary", Contactno = "9812000020" },
                 new SrStudents { Studentid = 21, Studentname = "Riya Bose",       Rollno = "R021", Classid = 2, Gender = "Female", Parentname = "Amit Bose",        Contactno = "9812000021" },
                 new SrStudents { Studentid = 22, Studentname = "Kiaan Pillai",    Rollno = "R022", Classid = 3, Gender = "Male",   Parentname = "Suresh Pillai",    Contactno = "9812000022" }
-            );
+            };
+            SrStudents.AddRange(students);
 
-            SrMarks.AddRange(
-                new SrMarks { Markid = 1, Studentid = 1, Subjectid = 1, Examtype = "Mid Term", Marksscored = 78, Totalmarks = 100, Examdate = new DateTime(2024, 10, 10) },
-                new SrMarks { Markid = 2, Studentid = 1, Subjectid = 2, Examtype = "Mid Term", Marksscored = 85, Totalmarks = 100, Examdate = new DateTime(2024, 10, 11) },
-                new SrMarks { Markid = 3, Studentid = 1, Subjectid = 3, Examtype = "Mid Term", Marksscored = 70, Totalmarks = 100, Examdate = new DateTime(2024, 10, 12) },
-                new SrMarks { Markid = 4, Studentid = 2, Subjectid = 1, Examtype = "Mid Term", Marksscored = 90, Totalmarks = 100, Examdate = new DateTime(2024, 10, 10) },
-                new SrMarks { Markid = 5, Studentid = 2, Subjectid = 2, Examtype = "Mid Term", Marksscored = 88, Totalmarks = 100, Examdate = new DateTime(2024, 10, 11) }
-            );
+            // Deterministic pseudo-random generator so the demo data is stable
+            // across restarts but still looks realistic and varied.
+            var rng = new Random(20240915);
 
-            SrAttendance.AddRange(
-                new SrAttendance { Attendanceid = 1, Studentid = 1, Classid = 1, Attenddate = new DateTime(2024, 11, 1), Status = "Present" },
-                new SrAttendance { Attendanceid = 2, Studentid = 1, Classid = 1, Attenddate = new DateTime(2024, 11, 2), Status = "Absent" },
-                new SrAttendance { Attendanceid = 3, Studentid = 2, Classid = 1, Attenddate = new DateTime(2024, 11, 1), Status = "Present" },
-                new SrAttendance { Attendanceid = 4, Studentid = 2, Classid = 1, Attenddate = new DateTime(2024, 11, 2), Status = "Present" }
-            );
+            // Marks: one Mid-Term entry per student for each of the 6 subjects.
+            var marks = new List<SrMarks>();
+            int markId = 1;
+            foreach (var st in students)
+            {
+                // Each student has a baseline ability; per-subject scores vary around it.
+                int baseScore = 55 + (int)(st.Studentid * 7 % 35);
+                foreach (var sub in subjects)
+                {
+                    int scored = Math.Clamp(baseScore + rng.Next(-12, 13), 33, 99);
+                    marks.Add(new SrMarks
+                    {
+                        Markid = markId++,
+                        Studentid = st.Studentid,
+                        Subjectid = sub.Subjectid,
+                        Examtype = "Mid Term",
+                        Marksscored = scored,
+                        Totalmarks = 100,
+                        Examdate = new DateTime(2024, 10, 15)
+                    });
+                }
+            }
+            SrMarks.AddRange(marks);
+
+            // Attendance: daily records (Mon-Fri) for two months, per student.
+            var attendance = new List<SrAttendance>();
+            int attId = 1;
+            var monthStarts = new[] { new DateTime(2024, 10, 1), new DateTime(2024, 11, 1) };
+            foreach (var st in students)
+            {
+                int presentRate = 70 + (int)(st.Studentid * 13 % 28); // 70–97% present
+                foreach (var monthStart in monthStarts)
+                {
+                    for (var day = monthStart; day.Month == monthStart.Month; day = day.AddDays(1))
+                    {
+                        if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
+                            continue;
+
+                        double roll = rng.NextDouble() * 100;
+                        string status = roll < presentRate
+                            ? "Present"
+                            : (roll < presentRate + (100 - presentRate) * 0.7 ? "Absent" : "Leave");
+
+                        attendance.Add(new SrAttendance
+                        {
+                            Attendanceid = attId++,
+                            Studentid = st.Studentid,
+                            Classid = st.Classid,
+                            Attenddate = day,
+                            Status = status
+                        });
+                    }
+                }
+            }
+            SrAttendance.AddRange(attendance);
 
             SaveChanges();
         }

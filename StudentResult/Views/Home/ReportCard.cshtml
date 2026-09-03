@@ -28,30 +28,30 @@ else
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-4">
-                    <div class="p-3 rounded" style="background:#f0f4f8;">
+                    <div class="p-3 rounded" style="background:#f3f5f9;">
                         <div class="text-muted" style="font-size:12px;">STUDENT NAME</div>
                         <div class="fw-bold">@student.Studentname</div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="p-3 rounded" style="background:#f0f4f8;">
+                    <div class="p-3 rounded" style="background:#f3f5f9;">
                         <div class="text-muted" style="font-size:12px;">OVERALL PERCENTAGE</div>
-                        <div class="fw-bold" style="color:#1a3c5e; font-size:1.4rem;">@overallPct%</div>
+                        <div class="fw-bold" style="color:#5b6e74; font-size:1.4rem;">@overallPct%</div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="p-3 rounded" style="background:#f0f4f8;">
+                    <div class="p-3 rounded" style="background:#f3f5f9;">
                         <div class="text-muted" style="font-size:12px;">ATTENDANCE</div>
-                        <div class="fw-bold" style="color: @(attendPct >= 75 ? "#28a745" : "#dc3545"); font-size:1.4rem;">@attendPct%</div>
+                        <div class="fw-bold" style="color: @(attendPct >= 75 ? "#4c8577" : "#b0525f"); font-size:1.4rem;">@attendPct%</div>
                     </div>
                 </div>
             </div>
 
-            <h6 class="fw-bold mb-2" style="color:#1a3c5e;">Subject-wise Marks</h6>
+            <h6 class="fw-bold mb-2" style="color:#5b6e74;">Subject-wise Marks</h6>
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Subject ID</th>
+                        <th>Subject</th>
                         <th>Exam Type</th>
                         <th>Marks Scored</th>
                         <th>Total</th>
@@ -75,23 +75,23 @@ else
                 </tbody>
             </table>
 
-            <h6 class="fw-bold mb-2 mt-4" style="color:#1a3c5e;">Attendance Summary</h6>
+            <h6 class="fw-bold mb-2 mt-4" style="color:#5b6e74;">Attendance Summary</h6>
             <div class="row">
                 <div class="col-md-3">
-                    <div class="p-3 rounded text-center" style="background:#d4edda;">
-                        <div style="font-size:1.5rem; font-weight:700; color:#28a745;">@presentDays</div>
-                        <div style="font-size:12px; color:#28a745;">Days Present</div>
+                    <div class="p-3 rounded text-center" style="background:#dbe7e3;">
+                        <div style="font-size:1.5rem; font-weight:700; color:#4c8577;">@presentDays</div>
+                        <div style="font-size:12px; color:#4c8577;">Days Present</div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="p-3 rounded text-center" style="background:#f8d7da;">
-                        <div style="font-size:1.5rem; font-weight:700; color:#dc3545;">@(totalDays - presentDays)</div>
-                        <div style="font-size:12px; color:#dc3545;">Days Absent</div>
+                    <div class="p-3 rounded text-center" style="background:#f0dcdf;">
+                        <div style="font-size:1.5rem; font-weight:700; color:#b0525f;">@(totalDays - presentDays)</div>
+                        <div style="font-size:12px; color:#b0525f;">Days Absent</div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="p-3 rounded text-center" style="background:#f0f4f8;">
-                        <div style="font-size:1.5rem; font-weight:700; color:#1a3c5e;">@totalDays</div>
+                    <div class="p-3 rounded text-center" style="background:#f3f5f9;">
+                        <div style="font-size:1.5rem; font-weight:700; color:#5b6e74;">@totalDays</div>
                         <div style="font-size:12px;">Total Days</div>
                     </div>
                 </div>

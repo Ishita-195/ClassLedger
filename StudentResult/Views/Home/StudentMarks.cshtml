@@ -1,0 +1,172 @@
+@model StudentResult.Models.StudentMarksVM
+@{
+    ViewData["Title"] = "Marks — " + Model.Student.Studentname;
+    var role = Context.Session.GetString("UserRole");
+    var canEdit = role == "Admin" || role == "Teacher";
+    var classText = Model.Class != null ? $"{Model.Class.Classname} - {Model.Class.Section}" : "—";
+
+    string Initials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var p = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return p.Length == 1 ? p[0].Substring(0, 1).ToUpper()
+             : (p[0].Substring(0, 1) + p[p.Length - 1].Substring(0, 1)).ToUpper();
+    }
+    string PctBg(decimal p) => p >= 75 ? "var(--green)" : p >= 40 ? "var(--amber)" : "var(--red)";
+    string PctFg(decimal p) => (p >= 40 && p < 75) ? "#333" : "#fff";
+    string PerfBg(string c) => c == "success" ? "var(--green)" : c == "primary" ? "var(--accent)" : c == "warning" ? "var(--amber)" : "var(--red)";
+}
+
+<a asp-action="Marks" class="back-link">← Back to students</a>
+
+<!-- Student header -->
+<div class="card">
+    <div class="card-body d-flex align-items-center flex-wrap gap-3">
+        <div class="avatar avatar-lg">@Initials(Model.Student.Studentname)</div>
+        <div class="flex-grow-1">
+            <h4 class="page-title mb-1">@Model.Student.Studentname</h4>
+            <div class="text-muted">Roll @Model.Student.Rollno · Class @classText</div>
+        </div>
+        <div class="text-end">
+            <div class="text-muted" style="font-size:12px;">PERFORMANCE</div>
+            <span class="perf-pill" style="background:@PerfBg(Model.PerformanceColor); color:#fff;">@Model.Performance</span>
+        </div>
+    </div>
+</div>
+
+<!-- Stat tiles -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="metric">
+            <div class="metric-label">Overall</div>
+            <div class="metric-value">@Model.OverallPercentage%</div>
+            <div class="text-muted" style="font-size:12px;">Grade @Model.OverallGrade</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="metric">
+            <div class="metric-label">Average / Subject</div>
+            <div class="metric-value">@Model.AveragePercentage%</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="metric">
+            <div class="metric-label">Total Marks</div>
+            <div class="metric-value">@Model.TotalScored<span class="text-muted" style="font-size:1rem;"> / @Model.TotalMax</span></div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="metric">
+            <div class="metric-label">Subjects Passed</div>
+            <div class="metric-value">@Model.SubjectsPassed<span class="text-muted" style="font-size:1rem;"> / @Model.SubjectsRecorded</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- Subject-wise marks -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="mb-0">Subject-wise Marks</h6>
+        @if (canEdit)
+        {
+            <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addMarkModal">+ Add / Update</button>
+        }
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        @if (canEdit)
+                        {
+                            <th></th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.Rows)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@r.Subject</td>
+                            @if (r.Recorded)
+                            {
+                                <td>@r.Scored <span class="text-muted">/ @r.Total</span></td>
+                                <td><span class="badge" style="background:@PctBg(r.Percentage); color:@PctFg(r.Percentage);">@r.Percentage%</span></td>
+                                <td>@r.Grade</td>
+                                @if (canEdit)
+                                {
+                                    <td class="text-end">
+                                        <form asp-action="DeleteMark" method="post" class="d-inline"
+                                              onsubmit="return confirm('Delete this mark?')">
+                                            <input type="hidden" name="id" value="@r.Markid" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                }
+                            }
+                            else
+                            {
+                                <td colspan="@(canEdit ? 4 : 3)" class="text-muted fst-italic">Not recorded</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@if (canEdit)
+{
+    <!-- Add / Update Mark Modal -->
+    <div class="modal fade" id="addMarkModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header modal-header-navy">
+                    <h5 class="modal-title">Add / Update Mark</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form asp-action="AddMarks" method="post">
+                    <input type="hidden" name="SrMarksObj.Studentid" value="@Model.Student.Studentid" />
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label">Subject</label>
+                            <select name="SrMarksObj.Subjectid" class="form-select">
+                                @foreach (var sub in Model.Subjects)
+                                {
+                                    <option value="@sub.Subjectid">@sub.Subjectname</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Exam Type</label>
+                            <select name="SrMarksObj.Examtype" class="form-select">
+                                <option>Unit Test</option>
+                                <option selected>Mid Term</option>
+                                <option>Final</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-2">
+                                <label class="form-label">Marks Scored</label>
+                                <input name="SrMarksObj.Marksscored" type="number" class="form-control" min="0" required />
+                            </div>
+                            <div class="col mb-2">
+                                <label class="form-label">Total Marks</label>
+                                <input name="SrMarksObj.Totalmarks" type="number" class="form-control" value="100" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Mark</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}

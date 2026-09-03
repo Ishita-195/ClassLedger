@@ -1,98 +1,11 @@
 @model StudentResult.Models.StudentResultVM
 @{
     ViewData["Title"] = "Attendance";
-    var studentLabel = (Model.AllStudents ?? new List<StudentResult.Models.SrStudents>())
-        .ToDictionary(s => s.Studentid, s => $"{s.Rollno} - {s.Studentname}");
-    var classLabel = (Model.AllClasses ?? new List<StudentResult.Models.SrClasses>())
-        .ToDictionary(c => c.Classid, c => $"{c.Classname} - {c.Section}");
-    string StudentName(int? id) => id.HasValue && studentLabel.TryGetValue(id.Value, out var n) ? n : "—";
-    string ClassName(int? id) => id.HasValue && classLabel.TryGetValue(id.Value, out var n) ? n : "—";
+    ViewData["DetailAction"] = "StudentAttendance";
+    ViewData["ActionVerb"] = "View attendance";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="page-title mb-0">📅 Attendance</h4>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#markAttendModal">+ Mark Attendance</button>
-</div>
+<h4 class="page-title mb-1">📅 Attendance</h4>
+<p class="text-muted mb-4">Select a student to view their monthly attendance breakdown.</p>
 
-<div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Student</th>
-                        <th>Class</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.AllAttendance == null || !Model.AllAttendance.Any())
-                    {
-                        <tr><td colspan="4" class="table-empty">No attendance recorded yet.</td></tr>
-                    }
-                    else
-                    {
-                        @foreach (var a in Model.AllAttendance)
-                        {
-                            var badgeClass = a.Status == "Present" ? "badge-present" :
-                                             a.Status == "Absent"  ? "badge-absent"  : "badge-leave";
-                            <tr>
-                                <td>@StudentName(a.Studentid)</td>
-                                <td>@ClassName(a.Classid)</td>
-                                <td>@a.Attenddate?.ToString("dd MMM yyyy")</td>
-                                <td><span class="badge @badgeClass">@a.Status</span></td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- Mark Attendance Modal -->
-<div class="modal fade" id="markAttendModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header modal-header-navy">
-                <h5 class="modal-title">Mark Attendance</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form asp-action="MarkAttendance" method="post">
-                <div class="modal-body">
-                    <div class="mb-2">
-                        <label class="form-label">Student</label>
-                        <select name="SrAttendanceObj.Studentid" class="form-select">
-                            @foreach (var s in Model.AllStudents)
-                            {
-                                <option value="@s.Studentid">@s.Rollno - @s.Studentname</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Class</label>
-                        <select name="SrAttendanceObj.Classid" class="form-select">
-                            @foreach (var c in Model.AllClasses)
-                            {
-                                <option value="@c.Classid">@c.Classname - @c.Section</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Status</label>
-                        <select name="SrAttendanceObj.Status" class="form-select">
-                            <option>Present</option>
-                            <option>Absent</option>
-                            <option>Leave</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@await Html.PartialAsync("_StudentGrid", Model)
