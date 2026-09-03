@@ -1,98 +1,128 @@
 # ClassLedger — Student Result & Attendance System
 
-A full-stack ASP.NET Core MVC web application built during my IT internship at **IFFCO Paradeep Limited Corporation** (May 2025) to digitize student academic record management — attendance tracking, result entry, and role-based dashboards backed by Oracle DB.
+A role-based web application for schools to digitize student academic records — attendance tracking, exam marks, class/subject management, and an analytics dashboard — with separate experiences for Admins, Teachers, and Students.
 
+<p align="center">
+  <a href="https://classledger.onrender.com">
+    <img src="https://img.shields.io/badge/Try_Live_Demo-Open_App-17516b?style=for-the-badge&logo=render&logoColor=white" alt="Try the live demo" />
+  </a>
+</p>
 
-## Project Overview
+> Sign in with a demo account from the [Demo Accounts](#demo-accounts) table. Hosted on Render's free tier — the first request after idle may take ~30–50s to wake.
 
-Manual management of student attendance and results is error-prone, scattered, and hard to audit. This system provides a centralized, role-based platform for:
+---
 
-- ✅ Tracking daily student attendance (Present / Absent / Leave)
-- ✅ Recording exam-wise marks per subject per student
-- ✅ Managing multi-class, multi-section school structures
-- ✅ Role-based login for Admin, Teacher, and Student
-- ✅ Oracle DB-backed relational schema with full referential integrity
+## About
 
-### Architecture
+**ClassLedger** replaces error-prone, scattered manual record-keeping with a single, role-based platform where a school can:
+
+- Track daily student attendance (Present / Absent / Leave)
+- Record exam-wise marks per subject per student
+- Organize multi-class, multi-section school structures with a shared subject curriculum
+- Give Admins, Teachers, and Students their own role-appropriate views
+- See academic trends on an admin analytics dashboard
+
+The project began as an ASP.NET Core MVC application backed by **Oracle DB**, built during a one-month IT internship at **IFFCO Paradeep Limited Corporation** (May 2025). It has since been modernized to **.NET 8** with an embedded **SQLite** database, so it now runs and deploys anywhere with **zero database setup** — the schema is created and seeded automatically on first run.
+
+**Live demo:** `https://classledger.onrender.com` — hosted free on Render (the first request after idle may take ~30–50s to wake). Sign in with a demo account from the table below.
+
+---
+
+## Features
+
+- **Dashboard** — at-a-glance counts (students, classes, attendance records) and a recent-students list
+- **Students** — searchable roster with add/delete and per-class filtering
+- **Marks** — pick a student, then view their marks across all 6 subjects with total, average, grade, and pass counts
+- **Attendance** — pick a student, then view a monthly breakdown (present / absent / leave / working days / percentage) with a doughnut chart and a month selector
+- **Classes & Subjects** — class cards with student counts plus a shared curriculum panel
+- **Analytics (Admin)** — four Chart.js visualizations backed by SQL aggregation queries
+- **Auth** — session-based login with role-aware navigation and access control
+- **Seeded demo data** — 22 students, a 6-subject curriculum, marks for every student, and two months of daily attendance so the app looks actively used
+
+---
+
+## Architecture
 
 ```
 [Login / Auth]
       ↓
-[Role Check] → Admin / Teacher / Student
+[Role Check] → Admin / Teacher / Student   (session-based)
       ↓
-[MVC Controller] → Business Logic (C#)
+[MVC Controllers] → Business Logic (C#)
       ↓
-[Razor Views] → HTML + CSS Frontend
+[Razor Views + Bootstrap] → Server-rendered UI
       ↓
-[ADO.NET / ODP.NET] → Oracle DB Queries
+[Entity Framework Core + raw aggregate SQL]
       ↓
-[Oracle Database] → SR_USERS, SR_STUDENTS, SR_CLASSES,
+[SQLite database] → SR_USERS, SR_STUDENTS, SR_CLASSES,
                     SR_SUBJECTS, SR_MARKS, SR_ATTENDANCE
 ```
 
 ---
 
-## Quick Setup (5 minutes)
+## Quick Setup
 
-### Step 1: Clone the Repository
+### Prerequisites
+- **.NET 8 SDK** (no database server required — SQLite is embedded)
 
-```bash
-git clone https://github.com/Ishita-195/student-attendance-system.git
-cd student-attendance-system
-```
-
-### Step 2: Set Up Oracle Database
+### Run locally
 
 ```bash
-# Run schema script in your Oracle SQL client
-@schema.sql
-```
-
-This creates 6 tables and seeds sample data:
-- 4 users (Admin, Teacher, 2 Students)
-- 2 classes (10th A, 9th A)
-- 4 subjects mapped to classes
-- Sample marks and attendance records
-
-### Step 3: Configure Connection String
-
-Update `StudentResult/appsettings.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "OracleDb": "User Id=<your_user>;Password=<your_pass>;Data Source=<datasource>"
-  }
-}
-```
-
-### Step 4: Build and Run
-
-```bash
-cd StudentResult
-dotnet build
+git clone https://github.com/Ishita-195/ClassLedger.git
+cd ClassLedger/StudentResult
 dotnet run
 ```
 
-App runs at `https://localhost:5001` by default.
+Then open the URL shown in the console (defaults to `http://localhost:5000`).
+
+On first run the app **creates and seeds** a local `studentresult.db` SQLite file automatically — there is no schema script to run and no connection string to configure. To reset all data back to the seed, stop the app, delete `studentresult.db`, and run again.
+
+### Run with Docker
+
+```bash
+docker build -t classledger .
+docker run -p 8080:8080 -e PORT=8080 classledger
+# open http://localhost:8080
+```
+
+### Deploy to Render (free)
+
+The repo includes a `render.yaml` Blueprint and a `Dockerfile`. In the Render dashboard: **New → Blueprint → select this repo → Apply**. Render builds the container and hosts it on the free tier; the SQLite data re-seeds on each deploy.
+
+---
+
+## Demo Accounts
+
+| Role    | Email                | Password    |
+|---------|----------------------|-------------|
+| Admin   | `admin@school.com`   | `admin123`  |
+| Teacher | `sharma@school.com`  | `teacher123`|
+| Student | `ravi@student.com`   | `ravi123`   |
+
+> These are seeded demo credentials for a public showcase. They are intentionally simple and are stored in plain text — do not reuse them for anything holding real data.
 
 ---
 
 ## File Structure
 
 ```
-student-attendance-system/
-├── StudentResult/                  # ASP.NET Core MVC application
-│   ├── Controllers/                # Route handlers per module
-│   ├── Models/                     # Entity + ViewModel classes
-│   ├── Views/                      # Razor HTML templates
-│   │   ├── Attendance/             # Attendance views
-│   │   ├── Results/                # Marks entry & view
-│   │   └── Shared/                 # Layout, nav, partials
-│   ├── appsettings.json            # DB config
-│   └── Program.cs                  # App entry point
+ClassLedger/
+├── StudentResult/                  # ASP.NET Core MVC application (.NET 8)
+│   ├── Controllers/                # HomeController, ReportsController
+│   ├── Models/                     # Entities, ModelContext (EF Core + seeding), ViewModels
+│   ├── Views/
+│   │   ├── Home/                   # Login, Dashboard, Students, Marks, StudentMarks,
+│   │   │                           #   Attendance, StudentAttendance, Classes, ReportCard
+│   │   ├── Reports/                # Admin analytics dashboard
+│   │   └── Shared/                 # _Layout, _Icon, _StudentGrid, Error
+│   ├── wwwroot/                    # site.css, Bootstrap + Chart.js (vendored locally)
+│   ├── appsettings.json
+│   ├── Startup.cs
+│   └── Program.cs                  # App entry point + first-run DB seeding
 │
-├── schema.sql                      # Oracle DB schema + seed data
+├── Dockerfile                      # Container build (Render / any host)
+├── render.yaml                     # Render Blueprint (free web service)
+├── schema.sql                      # Original Oracle schema (historical reference)
 ├── StudentResult.sln               # Visual Studio solution file
 └── .gitignore
 ```
@@ -101,85 +131,62 @@ student-attendance-system/
 
 ## Key Components
 
-### 1. Database Schema (`schema.sql`)
+### 1. Data layer (`Models/ModelContext.cs`)
 
-- 6 normalized Oracle tables with foreign key constraints
-- Role-based user model: `Admin`, `Teacher`, `Student`
-- Exam types supported: Unit Test, Mid Term, Final
-- Attendance status: `Present`, `Absent`, `Leave`
+- **Entity Framework Core** with the **SQLite** provider — one self-contained `.db` file, no server.
+- Six mapped tables: `SR_USERS`, `SR_CLASSES`, `SR_SUBJECTS`, `SR_STUDENTS`, `SR_MARKS`, `SR_ATTENDANCE`.
+- `EnsureSeeded()` creates the schema and seeds sample data on startup (only when empty).
 
-**Usage:**
-```sql
--- Load in Oracle SQL*Plus or SQL Developer
-@schema.sql
-
--- Verify tables created
-SELECT table_name FROM user_tables WHERE table_name LIKE 'SR_%';
+**Core tables**
 ```
-
-### 2. MVC Controllers (`StudentResult/Controllers/`)
-
-- Handle HTTP requests and route to appropriate views
-- Enforce role-based access before serving data
-- Execute Oracle queries via ADO.NET / ODP.NET
-
-**Example flow:**
-```csharp
-// Teacher marks attendance for a class
-[Authorize(Roles = "Teacher,Admin")]
-public IActionResult MarkAttendance(int classId, DateTime date)
-{
-    // Fetch students → render form → save to SR_ATTENDANCE
-}
-```
-
-### 3. Razor Views (`StudentResult/Views/`)
-
-- Server-side rendered HTML with C# logic
-- Attendance form: date picker + student list + status dropdown
-- Results view: subject-wise marks table per exam type
-- Admin dashboard: user and class management
-
-### 4. Oracle DB Layer
-
-- Oracle Data Provider for .NET (ODP.NET) handles all queries
-- Parameterized queries for safe data access
-- Referential integrity enforced at DB level via FK constraints
-
-**Core tables:**
-```sql
-SR_USERS       → Login accounts with roles
+SR_USERS       → Login accounts with roles (Admin / Teacher / Student)
 SR_CLASSES     → Classes + sections (e.g., 10th A)
-SR_SUBJECTS    → Subjects mapped per class
-SR_STUDENTS    → Student profiles linked to class + user
+SR_SUBJECTS    → Curriculum subjects (Physics, Chemistry, Hindi, Math, Biology, History)
+SR_STUDENTS    → Student profiles linked to class + (optional) login account
 SR_MARKS       → Exam-wise marks per student per subject
 SR_ATTENDANCE  → Daily attendance per student per class
 ```
+
+### 2. Controllers (`Controllers/`)
+
+- Handle HTTP requests and route to Razor views.
+- **Session-based role checks** guard each action (redirecting unauthenticated or unauthorized users); mutating actions are `POST` + anti-forgery token.
+- `ReportsController` runs raw `GROUP BY` aggregate queries for the analytics charts.
+
+### 3. Views (`Views/`)
+
+- Server-rendered Razor + Bootstrap, styled from a single design-token stylesheet (`wwwroot/css/site.css`).
+- **Marks** and **Attendance** use a consistent master → detail flow: a student card grid, then a per-student detail page.
+- UI icons are inline SVG (no emoji, no icon-font dependency) via the `_Icon` partial.
+
+### 4. Analytics (`Views/Reports/Index.cshtml`)
+
+- Four **[Chart.js](https://www.chartjs.org/)** charts, served **locally** from `wwwroot/js/chartjs/chart.umd.min.js` (no external CDN).
 
 ---
 
 ## Role Capabilities
 
-| Feature                  | Admin | Teacher | Student |
-|--------------------------|-------|---------|---------|
-| Manage users & classes   | ✅    | ❌      | ❌      |
-| Mark attendance          | ✅    | ✅      | ❌      |
-| Enter exam marks         | ✅    | ✅      | ❌      |
-| View own results         | ✅    | ✅      | ✅      |
-| View own attendance      | ✅    | ✅      | ✅      |
-| Analytics dashboard      | ✅    | ❌      | ❌      |
+| Feature                      | Admin | Teacher | Student |
+|------------------------------|:-----:|:-------:|:-------:|
+| Manage classes & subjects    |  Yes  |   No    |   No    |
+| Manage students              |  Yes  |   Yes   |   No    |
+| Mark attendance              |  Yes  |   Yes   |   No    |
+| Enter exam marks             |  Yes  |   Yes   |   No    |
+| View own report card         |  Yes  |   Yes   |   Yes   |
+| View own attendance          |  Yes  |   Yes   |   Yes   |
+| Analytics dashboard          |  Yes  |   No    |   No    |
 
 ---
 
 ## Analytics Dashboard (Admin)
 
-An admin-only analytics dashboard visualizes academic trends across the school.
-It lives at **`/Reports`** (sidebar → *Analytics → Reports*) and is guarded by the
-same session-based role check used elsewhere — non-admins are redirected away.
+An admin-only dashboard visualizes academic trends across the school. It lives at
+**`/Reports`** (sidebar → *Analytics → Reports*) and is guarded by the same session-based
+role check used elsewhere — non-admins are redirected away.
 
-Charts are rendered with **[Chart.js](https://www.chartjs.org/)**, served **locally**
-from `wwwroot/js/chartjs/chart.umd.min.js` (no external CDN). Each chart is backed by
-a single **`GROUP BY` aggregation query** run directly against the Oracle schema, so the
+Charts render with **Chart.js** (vendored locally). Each chart is backed by a single
+**`GROUP BY` aggregation query** run directly against the **SQLite** database, so the
 database does the aggregation and only compact result sets reach the app (no in-memory
 LINQ over full tables). Every chart has its own ViewModel (see `Models/ReportsVM.cs`).
 
@@ -199,96 +206,59 @@ LINQ over full tables). Every chart has its own ViewModel (see `Models/ReportsVM
 
 ---
 
-## Performance Notes
-
-| Operation                   | Notes                              |
-|-----------------------------|------------------------------------|
-| Attendance save (bulk)      | Single transaction per class/date  |
-| Marks retrieval (per student) | Indexed on STUDENTID + SUBJECTID |
-| Login auth                  | Role resolved from SR_USERS table  |
-| Schema setup                | One-time, ~30 seconds              |
-
----
-
 ## Troubleshooting
 
-### Oracle connection fails
+**Build errors**
 ```bash
-# Verify ODP.NET is installed
-dotnet list package | grep Oracle
-
-# Check connection string in appsettings.json
-# Ensure Oracle service is running on your system
+dotnet restore          # restore NuGet packages
+dotnet --version        # requires the .NET 8 SDK
 ```
 
-### Schema tables not found
-```sql
--- Confirm you ran schema.sql in the correct schema/user
-SELECT table_name FROM user_tables WHERE table_name LIKE 'SR_%';
-
--- If empty, re-run:
-@schema.sql
-```
-
-### Build errors
+**Port already in use** — set a port explicitly:
 ```bash
-# Restore NuGet packages
-dotnet restore
-
-# Check .NET SDK version (requires 6.0+)
-dotnet --version
+dotnet run --urls http://localhost:5055
 ```
 
-### Login not working
-```sql
--- Verify seed users were inserted
-SELECT USERNAME, USERROLE FROM SR_USERS;
-
--- Default credentials from schema:
--- Admin: admin@school.com / admin123
--- Teacher: sharma@school.com / teacher123
--- Student: ravi@student.com / ravi123
+**Reset the database** — the SQLite file is disposable:
+```bash
+# from StudentResult/
+rm studentresult.db     # it is recreated and re-seeded on the next run
 ```
+
+**Login not working** — use a seeded account from the Demo Accounts table above. (Login is `POST`-only; navigating directly to the login handler by URL returns 405 by design.)
 
 ---
 
 ## Technology Stack
 
+- **Runtime**: .NET 8
 - **Backend**: ASP.NET Core MVC (C#)
-- **Frontend**: HTML, CSS (Razor Views), Chart.js (vendored locally) for analytics charts
-- **Database**: Oracle DB
-- **DB Access**: ADO.NET + Oracle Data Provider for .NET (ODP.NET)
-- **IDE**: Visual Studio 2022
-- **Schema**: SQL with Oracle-specific syntax (VARCHAR2, NUMBER, TO_DATE)
+- **Data access**: Entity Framework Core (SQLite provider) + raw aggregate SQL for analytics
+- **Database**: SQLite (embedded, auto-seeded)
+- **Frontend**: Razor Views, Bootstrap, custom CSS design tokens, inline SVG icons
+- **Charts**: Chart.js (vendored locally, no CDN)
+- **Deployment**: Docker + Render (free tier)
 
 ---
 
-## Internship Context
+## Project History
 
-Built as part of a one-month IT internship at **IFFCO Paradeep Limited Corporation** in May 2025. The project provided hands-on experience with enterprise .NET development, Oracle database schema design, and MVC architecture in a real-world organizational setting — mirroring the kind of internal tooling commonly used in corporate IT environments.
+ClassLedger started as an internship deliverable at **IFFCO Paradeep Limited Corporation**
+(May 2025), built with ASP.NET Core MVC and **Oracle DB** to mirror the internal tooling
+common in corporate IT environments. It has since been modernized for portability and
+public hosting:
 
----
+- **.NET Core 2.1 → .NET 8**
+- **Oracle (ODP.NET) → SQLite (EF Core)** — no database server or connection string needed
+- Login and all mutations moved to `POST` + anti-forgery tokens
+- Student-centric Marks & Attendance flows, an analytics dashboard, a responsive UI, and a containerized deployment
 
-## Summary
-
-You now have a **complete, role-based academic management system** that:
-
-✅ **Tracks** daily student attendance per class  
-✅ **Records** exam-wise marks across subjects  
-✅ **Enforces** role-based access (Admin / Teacher / Student)  
-✅ **Backed** by a normalized Oracle DB schema  
-✅ **Built** with ASP.NET Core MVC and Razor Views  
-✅ **Ready** to extend with reporting or notifications
-
----
-  
-**Framework**: ASP.NET Core MVC + Oracle DB  
-**Status**: Complete — Internship Deliverable
+The original Oracle schema is preserved as `schema.sql` for reference.
 
 ---
 
 ## Author
 
-**Ishita Anand**  
-B.Tech CSE, KIIT University (2023–2027)  
+**Ishita Anand**
+B.Tech CSE, KIIT University (2023–2027)
 [GitHub](https://github.com/Ishita-195) · [LinkedIn](https://linkedin.com/in/ishita-anand-791770343)
