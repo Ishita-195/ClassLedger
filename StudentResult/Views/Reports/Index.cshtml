@@ -60,7 +60,7 @@
         var scatterData = @Json.Serialize(Model.AttendanceVsResult
                               .Select(x => new { x = x.AvgAttendance, y = x.AvgResult, label = x.StudentName }));
 
-        var navy = '#5b6e74', teal = '#819fa7', green = '#4c8577', red = '#b0525f', amber = '#c99a3f';
+        var navy = '#17516b', teal = '#2a9db5', green = '#16a34a', red = '#e11d48', amber = '#f59e0b';
 
         // 1. Attendance % distribution
         new Chart(document.getElementById('attendanceChart'), {

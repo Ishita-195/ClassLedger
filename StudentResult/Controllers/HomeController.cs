@@ -78,14 +78,25 @@ namespace StudentResult.Controllers
         // STUDENTS
         // ─────────────────────────────────────────
 
-        public IActionResult Students()
+        public IActionResult Students(int? classId)
         {
             if (HttpContext.Session.GetString("UserID") == null)
                 return RedirectToAction("Login");
 
+            var query = _context.SrStudents.AsQueryable();
+            if (classId.HasValue)
+                query = query.Where(s => s.Classid == classId.Value);
+
             StudentResultVM obj = new StudentResultVM();
-            obj.AllStudents = _context.SrStudents.OrderBy(s => s.Studentname).ToList();
+            obj.AllStudents = query.OrderBy(s => s.Studentname).ToList();
             obj.AllClasses  = _context.SrClasses.ToList();
+
+            if (classId.HasValue)
+            {
+                var cls = obj.AllClasses.FirstOrDefault(c => c.Classid == classId.Value);
+                ViewBag.FilterClassId = classId.Value;
+                ViewBag.FilterClassName = cls != null ? $"{cls.Classname} - {cls.Section}" : null;
+            }
             return View(obj);
         }
 
@@ -360,6 +371,7 @@ namespace StudentResult.Controllers
             StudentResultVM obj = new StudentResultVM();
             obj.AllClasses  = _context.SrClasses.ToList();
             obj.AllSubjects = _context.SrSubjects.ToList();
+            obj.AllStudents = _context.SrStudents.ToList();
             return View(obj);
         }
 

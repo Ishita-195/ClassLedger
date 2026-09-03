@@ -1,64 +1,72 @@
 @model StudentResult.Models.StudentResultVM
 @{
     ViewData["Title"] = "Classes & Subjects";
-    var classLabel = (Model.AllClasses ?? new List<StudentResult.Models.SrClasses>())
-        .ToDictionary(c => c.Classid, c => $"{c.Classname} - {c.Section}");
-    string ClassName(int? id) => id.HasValue && classLabel.TryGetValue(id.Value, out var n) ? n : "—";
+    var studentsPerClass = (Model.AllStudents ?? new List<StudentResult.Models.SrStudents>())
+        .Where(s => s.Classid != null)
+        .GroupBy(s => s.Classid.Value)
+        .ToDictionary(g => g.Key, g => g.Count());
+    int CountFor(int classId) => studentsPerClass.TryGetValue(classId, out var n) ? n : 0;
+    int subjectCount = (Model.AllSubjects ?? new List<StudentResult.Models.SrSubjects>()).Count;
+
+    string ClassBadge(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var digits = new string(name.TakeWhile(char.IsDigit).ToArray());
+        return string.IsNullOrEmpty(digits) ? name.Substring(0, 1).ToUpper() : digits;
+    }
 }
 
-<h4 class="page-title mb-4">🏫 Classes & Subjects</h4>
+<h4 class="page-title mb-4">🏫 Classes &amp; Subjects</h4>
 
-<div class="row g-4">
-    <!-- Classes -->
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Classes</span>
-                <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addClassModal">+ Add</button>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-hover mb-0">
-                    <thead><tr><th>ID</th><th>Class</th><th>Section</th></tr></thead>
-                    <tbody>
-                        @foreach (var c in Model.AllClasses)
-                        {
-                            <tr>
-                                <td>@c.Classid</td>
-                                <td>@c.Classname</td>
-                                <td>@c.Section</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Subjects -->
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Subjects</span>
-                <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addSubjectModal">+ Add</button>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-hover mb-0">
-                    <thead><tr><th>ID</th><th>Subject</th><th>Class</th></tr></thead>
-                    <tbody>
-                        @foreach (var s in Model.AllSubjects)
-                        {
-                            <tr>
-                                <td>@s.Subjectid</td>
-                                <td>@s.Subjectname</td>
-                                <td>@ClassName(s.Classid)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<!-- ── Classes ───────────────────────────────── -->
+<div class="section-label">
+    <h5>Classes <span class="class-count-badge">@Model.AllClasses.Count</span></h5>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClassModal">+ Add Class</button>
 </div>
+
+@if (!Model.AllClasses.Any())
+{
+    <div class="alert alert-info">No classes yet.</div>
+}
+else
+{
+    <div class="student-grid mb-4">
+        @foreach (var c in Model.AllClasses)
+        {
+            <a class="student-card" asp-action="Students" asp-controller="Home" asp-route-classId="@c.Classid">
+                <div class="avatar">@ClassBadge(c.Classname)</div>
+                <div>
+                    <div class="student-name">@c.Classname - @c.Section</div>
+                    <div class="student-meta">@CountFor(c.Classid) student@(CountFor(c.Classid) == 1 ? "" : "s") · @subjectCount subjects</div>
+                    <div class="student-meta" style="color:var(--navy); font-weight:600;">View students →</div>
+                </div>
+            </a>
+        }
+    </div>
+}
+
+<!-- ── Curriculum / Subjects ─────────────────── -->
+<div class="section-label mt-4">
+    <div>
+        <h5>Curriculum <span class="class-count-badge">@subjectCount</span></h5>
+        <div class="count-note">Subjects taught across all classes</div>
+    </div>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSubjectModal">+ Add Subject</button>
+</div>
+
+@if (!Model.AllSubjects.Any())
+{
+    <div class="alert alert-info">No subjects yet.</div>
+}
+else
+{
+    <div class="subject-chips">
+        @foreach (var s in Model.AllSubjects)
+        {
+            <span class="subject-chip"><span class="dot"></span>@s.Subjectname</span>
+        }
+    </div>
+}
 
 <!-- Add Class Modal -->
 <div class="modal fade" id="addClassModal" tabindex="-1">
@@ -100,17 +108,9 @@
                 <div class="modal-body">
                     <div class="mb-2">
                         <label class="form-label">Subject Name</label>
-                        <input name="SrSubjectsObj.Subjectname" class="form-control" required />
+                        <input name="SrSubjectsObj.Subjectname" class="form-control" placeholder="e.g. Geography" required />
                     </div>
-                    <div class="mb-2">
-                        <label class="form-label">Class</label>
-                        <select name="SrSubjectsObj.Classid" class="form-select">
-                            @foreach (var c in Model.AllClasses)
-                            {
-                                <option value="@c.Classid">@c.Classname - @c.Section</option>
-                            }
-                        </select>
-                    </div>
+                    <div class="text-muted" style="font-size:12px;">Subjects apply to all classes (school curriculum).</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>

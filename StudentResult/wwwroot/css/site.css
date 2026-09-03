@@ -4,29 +4,29 @@
    ============================================================ */
 
 :root {
-    /* Soft Blue — a calm, muted, professional palette. */
-    --navy:        #5b6e74;   /* slate blue-gray: sidebar, headers, table head, headings, buttons, links */
-    --navy-dark:   #46565c;   /* darker slate: hover */
-    --ink:         #0d0d0d;   /* near-black: strongest text */
-    --teal:        #819fa7;   /* soft blue: secondary stat accent */
-    --accent:      #819fa7;   /* soft blue: active nav highlight, progress, focus */
-    --accent-dark: #6f8a92;   /* soft blue hover */
-    --accent-soft: #dce4e6;   /* light: brand text on the sidebar */
-    --active-fg:   #22303a;   /* dark text on the soft-blue active item */
-    --amber:       #c99a3f;   /* muted gold: 'leave' */
-    --green:       #4c8577;   /* muted green: present */
-    --red:         #b0525f;   /* muted rose: absent */
-    --bg:          #f3f5f9;   /* app background */
+    /* Ocean Blue — a bright, confident, professional palette. */
+    --navy:        #17516b;   /* deep ocean blue: sidebar, headers, table head, buttons, headings */
+    --navy-dark:   #0f3d52;   /* darker ocean: hover */
+    --ink:         #0d1b24;   /* near-black: strongest text */
+    --teal:        #2a9db5;   /* bright teal: secondary stat accent */
+    --accent:      #0ea5e9;   /* sky-500: bright accent — active nav, links, progress */
+    --accent-dark: #0284c7;   /* sky-600: hover */
+    --accent-soft: #7dd3fc;   /* sky-300: brand text on the sidebar */
+    --active-fg:   #ffffff;   /* white text on the bright active item */
+    --amber:       #f59e0b;   /* amber-500: 'leave' / warning */
+    --green:       #16a34a;   /* green-600: present */
+    --red:         #e11d48;   /* rose-600: absent */
+    --bg:          #eef3f8;   /* light blue-tinted background */
     --surface:     #ffffff;   /* cards */
-    --surface-alt: #f2f2f0;   /* subtle alternate surface */
-    --text:        #1e2427;   /* body text */
-    --muted:       #6b7a80;   /* secondary text */
-    --border:      #e3e7ec;   /* hairlines */
-    --sidebar-fg:  #e6ecee;   /* sidebar link text */
-    --sidebar-muted:#b4c3c8;  /* sidebar section headings */
-    --sidebar-divider:#6d8188;
+    --surface-alt: #f1f6fb;   /* subtle alternate surface */
+    --text:        #16232b;   /* body text */
+    --muted:       #64748b;   /* secondary text */
+    --border:      #dbe6ef;   /* hairlines */
+    --sidebar-fg:  #d6e6ef;   /* sidebar link text */
+    --sidebar-muted:#8fb4c6;  /* sidebar section headings */
+    --sidebar-divider:#2c6a86;
     --sidebar-width: 220px;
-    --card-shadow: 0 1px 3px rgba(13,13,13,0.08), 0 1px 2px rgba(13,13,13,0.04);
+    --card-shadow: 0 1px 3px rgba(13,27,36,0.10), 0 1px 2px rgba(13,27,36,0.05);
 }
 
 body {
@@ -59,7 +59,7 @@ body {
 
 .sidebar a:hover,
 .sidebar a.active {
-    background: var(--accent);
+    background: var(--accent-dark);
     color: var(--active-fg);
     font-weight: 600;
 }
@@ -336,6 +336,53 @@ a:hover { color: var(--navy-dark); }
     display: inline-block;
     padding: 3px 12px;
     border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ---- Curriculum subject chips ---- */
+.subject-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.subject-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-weight: 600;
+    color: var(--navy);
+    box-shadow: var(--card-shadow);
+}
+
+.subject-chip .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: 0 0 auto;
+}
+
+/* Section label above a card group */
+.section-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 0 14px;
+}
+.section-label h5 { margin: 0; color: var(--navy); font-weight: 700; }
+.section-label .count-note { font-size: 13px; color: var(--muted); }
+
+.class-count-badge {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 20px;
+    padding: 2px 10px;
     font-size: 12px;
     font-weight: 600;
 }
