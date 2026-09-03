@@ -1,51 +1,68 @@
 @model StudentResult.Models.StudentResultVM
 @{
     ViewData["Title"] = "Marks";
+    var studentLabel = (Model.AllStudents ?? new List<StudentResult.Models.SrStudents>())
+        .ToDictionary(s => s.Studentid, s => $"{s.Rollno} - {s.Studentname}");
+    var subjectLabel = (Model.AllSubjects ?? new List<StudentResult.Models.SrSubjects>())
+        .ToDictionary(s => s.Subjectid, s => s.Subjectname);
+    string StudentName(int? id) => id.HasValue && studentLabel.TryGetValue(id.Value, out var n) ? n : "—";
+    string SubjectName(int? id) => id.HasValue && subjectLabel.TryGetValue(id.Value, out var n) ? n : "—";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0" style="color:#1a3c5e;">📝 Marks Entry</h4>
+    <h4 class="page-title mb-0">📝 Marks Entry</h4>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMarksModal">+ Add Marks</button>
 </div>
 
 <div class="card">
     <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-            <thead>
-                <tr>
-                    <th>Student ID</th>
-                    <th>Subject ID</th>
-                    <th>Exam Type</th>
-                    <th>Marks Scored</th>
-                    <th>Total Marks</th>
-                    <th>Percentage</th>
-                    <th>Exam Date</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var m in Model.AllMarks)
-                {
-                    var pct = m.Totalmarks > 0 ? Math.Round((decimal)(m.Marksscored / m.Totalmarks * 100), 1) : 0;
-                    var grade = pct >= 90 ? "A+" : pct >= 75 ? "A" : pct >= 60 ? "B" : pct >= 45 ? "C" : "F";
-                    var badgeColor = pct >= 75 ? "success" : pct >= 45 ? "warning" : "danger";
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
                     <tr>
-                        <td>@m.Studentid</td>
-                        <td>@m.Subjectid</td>
-                        <td><span class="badge bg-info text-dark">@m.Examtype</span></td>
-                        <td>@m.Marksscored</td>
-                        <td>@m.Totalmarks</td>
-                        <td><span class="badge bg-@badgeColor">@pct% (@grade)</span></td>
-                        <td>@m.Examdate?.ToString("dd MMM yyyy")</td>
-                        <td>
-                            <a asp-action="DeleteMark" asp-route-id="@m.Markid"
-                               class="btn btn-sm btn-danger"
-                               onclick="return confirm('Delete this mark?')">Delete</a>
-                        </td>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Exam Type</th>
+                        <th>Marks Scored</th>
+                        <th>Total Marks</th>
+                        <th>Percentage</th>
+                        <th>Exam Date</th>
+                        <th>Action</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @if (Model.AllMarks == null || !Model.AllMarks.Any())
+                    {
+                        <tr><td colspan="8" class="table-empty">No marks recorded yet.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var m in Model.AllMarks)
+                        {
+                            var pct = m.Totalmarks > 0 ? Math.Round((decimal)(m.Marksscored / m.Totalmarks * 100), 1) : 0;
+                            var grade = pct >= 90 ? "A+" : pct >= 75 ? "A" : pct >= 60 ? "B" : pct >= 45 ? "C" : "F";
+                            var badgeColor = pct >= 75 ? "success" : pct >= 45 ? "warning" : "danger";
+                            <tr>
+                                <td>@StudentName(m.Studentid)</td>
+                                <td>@SubjectName(m.Subjectid)</td>
+                                <td><span class="badge bg-info text-dark">@m.Examtype</span></td>
+                                <td>@m.Marksscored</td>
+                                <td>@m.Totalmarks</td>
+                                <td><span class="badge bg-@badgeColor">@pct% (@grade)</span></td>
+                                <td>@m.Examdate?.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <form asp-action="DeleteMark" method="post" class="d-inline"
+                                          onsubmit="return confirm('Delete this mark?')">
+                                        <input type="hidden" name="id" value="@m.Markid" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -53,11 +70,11 @@
 <div class="modal fade" id="addMarksModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header" style="background:#1a3c5e; color:white;">
+            <div class="modal-header modal-header-navy">
                 <h5 class="modal-title">Add Marks</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form asp-action="AddMarks" method="get">
+            <form asp-action="AddMarks" method="post">
                 <div class="modal-body">
                     <div class="mb-2">
                         <label class="form-label">Student</label>

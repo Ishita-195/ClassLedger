@@ -134,8 +134,28 @@ namespace StudentResult.Models
             );
 
             SrStudents.AddRange(
-                new SrStudents { Studentid = 1, Studentname = "Ravi Kumar",  Rollno = "R001", Classid = 1, Gender = "Male",   Parentname = "Suresh Kumar", Contactno = "9876543210", Userid = 3 },
-                new SrStudents { Studentid = 2, Studentname = "Priya Singh", Rollno = "R002", Classid = 1, Gender = "Female", Parentname = "Ramesh Singh", Contactno = "9876543211", Userid = 4 }
+                new SrStudents { Studentid = 1,  Studentname = "Ravi Kumar",      Rollno = "R001", Classid = 1, Gender = "Male",   Parentname = "Suresh Kumar",     Contactno = "9876543210", Userid = 3 },
+                new SrStudents { Studentid = 2,  Studentname = "Priya Singh",     Rollno = "R002", Classid = 1, Gender = "Female", Parentname = "Ramesh Singh",     Contactno = "9876543211", Userid = 4 },
+                new SrStudents { Studentid = 3,  Studentname = "Aarav Sharma",    Rollno = "R003", Classid = 1, Gender = "Male",   Parentname = "Rohit Sharma",     Contactno = "9812000003" },
+                new SrStudents { Studentid = 4,  Studentname = "Diya Patel",      Rollno = "R004", Classid = 1, Gender = "Female", Parentname = "Nilesh Patel",     Contactno = "9812000004" },
+                new SrStudents { Studentid = 5,  Studentname = "Arjun Reddy",     Rollno = "R005", Classid = 1, Gender = "Male",   Parentname = "Venkat Reddy",     Contactno = "9812000005" },
+                new SrStudents { Studentid = 6,  Studentname = "Ananya Iyer",     Rollno = "R006", Classid = 1, Gender = "Female", Parentname = "Suresh Iyer",      Contactno = "9812000006" },
+                new SrStudents { Studentid = 7,  Studentname = "Vivaan Gupta",    Rollno = "R007", Classid = 1, Gender = "Male",   Parentname = "Manoj Gupta",      Contactno = "9812000007" },
+                new SrStudents { Studentid = 8,  Studentname = "Ishaan Nair",     Rollno = "R008", Classid = 2, Gender = "Male",   Parentname = "Rajan Nair",       Contactno = "9812000008" },
+                new SrStudents { Studentid = 9,  Studentname = "Saanvi Joshi",    Rollno = "R009", Classid = 2, Gender = "Female", Parentname = "Prakash Joshi",    Contactno = "9812000009" },
+                new SrStudents { Studentid = 10, Studentname = "Aditya Menon",    Rollno = "R010", Classid = 2, Gender = "Male",   Parentname = "Gopal Menon",      Contactno = "9812000010" },
+                new SrStudents { Studentid = 11, Studentname = "Kavya Rao",       Rollno = "R011", Classid = 2, Gender = "Female", Parentname = "Sridhar Rao",      Contactno = "9812000011" },
+                new SrStudents { Studentid = 12, Studentname = "Rohan Verma",     Rollno = "R012", Classid = 2, Gender = "Male",   Parentname = "Anil Verma",       Contactno = "9812000012" },
+                new SrStudents { Studentid = 13, Studentname = "Myra Kapoor",     Rollno = "R013", Classid = 2, Gender = "Female", Parentname = "Deepak Kapoor",    Contactno = "9812000013" },
+                new SrStudents { Studentid = 14, Studentname = "Kabir Malhotra",  Rollno = "R014", Classid = 3, Gender = "Male",   Parentname = "Vikram Malhotra",  Contactno = "9812000014" },
+                new SrStudents { Studentid = 15, Studentname = "Aisha Khan",      Rollno = "R015", Classid = 3, Gender = "Female", Parentname = "Imran Khan",       Contactno = "9812000015" },
+                new SrStudents { Studentid = 16, Studentname = "Reyansh Chauhan", Rollno = "R016", Classid = 3, Gender = "Male",   Parentname = "Devendra Chauhan", Contactno = "9812000016" },
+                new SrStudents { Studentid = 17, Studentname = "Navya Mehta",     Rollno = "R017", Classid = 3, Gender = "Female", Parentname = "Bhavesh Mehta",    Contactno = "9812000017" },
+                new SrStudents { Studentid = 18, Studentname = "Aryan Singh",     Rollno = "R018", Classid = 3, Gender = "Male",   Parentname = "Harpreet Singh",   Contactno = "9812000018" },
+                new SrStudents { Studentid = 19, Studentname = "Sara Fernandes",  Rollno = "R019", Classid = 3, Gender = "Female", Parentname = "Peter Fernandes",  Contactno = "9812000019" },
+                new SrStudents { Studentid = 20, Studentname = "Dev Choudhary",   Rollno = "R020", Classid = 1, Gender = "Male",   Parentname = "Ramesh Choudhary", Contactno = "9812000020" },
+                new SrStudents { Studentid = 21, Studentname = "Riya Bose",       Rollno = "R021", Classid = 2, Gender = "Female", Parentname = "Amit Bose",        Contactno = "9812000021" },
+                new SrStudents { Studentid = 22, Studentname = "Kiaan Pillai",    Rollno = "R022", Classid = 3, Gender = "Male",   Parentname = "Suresh Pillai",    Contactno = "9812000022" }
             );
 
             SrMarks.AddRange(

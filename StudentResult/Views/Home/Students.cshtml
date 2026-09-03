@@ -1,46 +1,60 @@
 @model StudentResult.Models.StudentResultVM
 @{
     ViewData["Title"] = "Students";
+    var classLabel = (Model.AllClasses ?? new List<StudentResult.Models.SrClasses>())
+        .ToDictionary(c => c.Classid, c => $"{c.Classname} - {c.Section}");
+    string ClassName(int? id) => id.HasValue && classLabel.TryGetValue(id.Value, out var n) ? n : "—";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0" style="color:#1a3c5e;">👨‍🎓 Students</h4>
+    <h4 class="page-title mb-0">👨‍🎓 Students</h4>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">+ Add Student</button>
 </div>
 
 <div class="card">
     <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-            <thead>
-                <tr>
-                    <th>Roll No</th>
-                    <th>Name</th>
-                    <th>Class</th>
-                    <th>Gender</th>
-                    <th>Parent</th>
-                    <th>Contact</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var s in Model.AllStudents)
-                {
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
                     <tr>
-                        <td><span class="badge bg-secondary">@s.Rollno</span></td>
-                        <td>@s.Studentname</td>
-                        <td>@s.Classid</td>
-                        <td>@s.Gender</td>
-                        <td>@s.Parentname</td>
-                        <td>@s.Contactno</td>
-                        <td>
-                            <a asp-action="DeleteStudent" asp-route-id="@s.Studentid"
-                               class="btn btn-sm btn-danger"
-                               onclick="return confirm('Delete this student?')">Delete</a>
-                        </td>
+                        <th>Roll No</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Gender</th>
+                        <th>Parent</th>
+                        <th>Contact</th>
+                        <th>Action</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @if (Model.AllStudents == null || !Model.AllStudents.Any())
+                    {
+                        <tr><td colspan="7" class="table-empty">No students yet — add one to get started.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var s in Model.AllStudents)
+                        {
+                            <tr>
+                                <td><span class="badge bg-secondary">@s.Rollno</span></td>
+                                <td>@s.Studentname</td>
+                                <td>@ClassName(s.Classid)</td>
+                                <td>@s.Gender</td>
+                                <td>@s.Parentname</td>
+                                <td>@s.Contactno</td>
+                                <td>
+                                    <form asp-action="DeleteStudent" method="post" class="d-inline"
+                                          onsubmit="return confirm('Delete this student?')">
+                                        <input type="hidden" name="id" value="@s.Studentid" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -48,11 +62,11 @@
 <div class="modal fade" id="addStudentModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header" style="background:#1a3c5e; color:white;">
+            <div class="modal-header modal-header-navy">
                 <h5 class="modal-title">Add New Student</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form asp-action="AddStudent" method="get">
+            <form asp-action="AddStudent" method="post">
                 <div class="modal-body">
                     <div class="mb-2">
                         <label class="form-label">Full Name</label>

@@ -1,9 +1,12 @@
 @model StudentResult.Models.StudentResultVM
 @{
     ViewData["Title"] = "Classes & Subjects";
+    var classLabel = (Model.AllClasses ?? new List<StudentResult.Models.SrClasses>())
+        .ToDictionary(c => c.Classid, c => $"{c.Classname} - {c.Section}");
+    string ClassName(int? id) => id.HasValue && classLabel.TryGetValue(id.Value, out var n) ? n : "—";
 }
 
-<h4 class="fw-bold mb-4" style="color:#1a3c5e;">🏫 Classes & Subjects</h4>
+<h4 class="page-title mb-4">🏫 Classes & Subjects</h4>
 
 <div class="row g-4">
     <!-- Classes -->
@@ -40,14 +43,14 @@
             </div>
             <div class="card-body p-0">
                 <table class="table table-hover mb-0">
-                    <thead><tr><th>ID</th><th>Subject</th><th>Class ID</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Subject</th><th>Class</th></tr></thead>
                     <tbody>
                         @foreach (var s in Model.AllSubjects)
                         {
                             <tr>
                                 <td>@s.Subjectid</td>
                                 <td>@s.Subjectname</td>
-                                <td>@s.Classid</td>
+                                <td>@ClassName(s.Classid)</td>
                             </tr>
                         }
                     </tbody>
@@ -61,11 +64,11 @@
 <div class="modal fade" id="addClassModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
-            <div class="modal-header" style="background:#1a3c5e; color:white;">
+            <div class="modal-header modal-header-navy">
                 <h5 class="modal-title">Add Class</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form asp-action="AddClass" method="get">
+            <form asp-action="AddClass" method="post">
                 <div class="modal-body">
                     <div class="mb-2">
                         <label class="form-label">Class Name</label>
@@ -89,11 +92,11 @@
 <div class="modal fade" id="addSubjectModal" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
-            <div class="modal-header" style="background:#1a3c5e; color:white;">
+            <div class="modal-header modal-header-navy">
                 <h5 class="modal-title">Add Subject</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form asp-action="AddSubject" method="get">
+            <form asp-action="AddSubject" method="post">
                 <div class="modal-body">
                     <div class="mb-2">
                         <label class="form-label">Subject Name</label>

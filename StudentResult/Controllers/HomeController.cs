@@ -24,6 +24,8 @@ namespace StudentResult.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult doLogin(StudentResultVM model)
         {
             var input = model.SrUsersObj;
@@ -66,6 +68,7 @@ namespace StudentResult.Controllers
             obj.TotalPresent   = _context.SrAttendance.Count(a => a.Status == "Present");
             obj.TotalAbsent    = _context.SrAttendance.Count(a => a.Status == "Absent");
             obj.AllStudents    = _context.SrStudents.OrderBy(s => s.Studentname).ToList();
+            obj.AllClasses     = _context.SrClasses.ToList();
 
             ViewBag.Role = role;
             return View(obj);
@@ -86,6 +89,8 @@ namespace StudentResult.Controllers
             return View(obj);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddStudent(StudentResultVM model)
         {
             var s = model.SrStudentsObj;
@@ -96,6 +101,8 @@ namespace StudentResult.Controllers
             return RedirectToAction("Students");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteStudent(int id)
         {
             var student = _context.SrStudents.Find(id);
@@ -123,6 +130,8 @@ namespace StudentResult.Controllers
             return View(obj);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddMarks(StudentResultVM model)
         {
             var m = model.SrMarksObj;
@@ -134,6 +143,8 @@ namespace StudentResult.Controllers
             return RedirectToAction("Marks");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteMark(int id)
         {
             var mark = _context.SrMarks.Find(id);
@@ -161,6 +172,8 @@ namespace StudentResult.Controllers
             return View(obj);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult MarkAttendance(StudentResultVM model)
         {
             var a = model.SrAttendanceObj;
@@ -210,6 +223,8 @@ namespace StudentResult.Controllers
             return View(obj);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddClass(StudentResultVM model)
         {
             var c = model.SrClassesObj;
@@ -220,6 +235,8 @@ namespace StudentResult.Controllers
             return RedirectToAction("Classes");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddSubject(StudentResultVM model)
         {
             var s = model.SrSubjectsObj;

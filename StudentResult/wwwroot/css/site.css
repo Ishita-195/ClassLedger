@@ -1,7 +1,208 @@
-/* Student Result System - Custom Styles */
+/* ============================================================
+   ClassLedger — design system
+   Single source of truth for colors, layout, and components.
+   ============================================================ */
+
+:root {
+    --navy:        #1a3c5e;   /* primary brand / sidebar / headings */
+    --navy-dark:   #14304b;   /* hovered/darker navy */
+    --teal:        #2e7d9e;   /* secondary accent */
+    --amber:       #ffc107;   /* highlight / active */
+    --green:       #28a745;
+    --red:         #dc3545;
+    --bg:          #f0f4f8;   /* app background */
+    --sidebar-fg:  #cdd9e5;   /* sidebar link text */
+    --sidebar-muted:#7a99b8;  /* sidebar section headings */
+    --sidebar-divider:#2e5a80;
+    --sidebar-width: 220px;
+    --card-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+}
+
+/* ---- Headings / page titles ---- */
+.page-title {
+    color: var(--navy);
+    font-weight: 700;
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+    background: var(--navy);
+    width: var(--sidebar-width);
+    padding-top: 20px;
+}
+
+.sidebar a {
+    color: var(--sidebar-fg);
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 6px;
+    margin: 4px 10px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: var(--amber);
+    color: var(--navy);
+    font-weight: 600;
+}
+
+.sidebar .sidebar-heading {
+    color: var(--sidebar-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 12px 20px 4px;
+    letter-spacing: 1px;
+}
+
+.sidebar-brand {
+    color: var(--amber);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.sidebar-brand-sub {
+    color: var(--sidebar-muted);
+    font-size: 12px;
+}
+
+.sidebar-divider {
+    border-color: var(--sidebar-divider);
+}
+
+.sidebar-logout {
+    color: #ff6b6b !important;
+}
+
+/* On desktop the sidebar is a full-height static column. */
+@media (min-width: 768px) {
+    .sidebar {
+        min-height: 100vh;
+    }
+    .mobile-topbar { display: none; }
+    .sidebar-backdrop { display: none !important; }
+}
+
+/* On mobile the sidebar becomes a slide-in drawer. */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1045;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        overflow-y: auto;
+    }
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+    }
+    .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        z-index: 1044;
+        display: none;
+    }
+    .sidebar-backdrop.show { display: block; }
+}
+
+/* ---- Mobile top bar (only shown below md) ---- */
+.mobile-topbar {
+    background: var(--navy);
+    color: #fff;
+    padding: 10px 16px;
+}
+
+.mobile-topbar .brand {
+    color: var(--amber);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.mobile-topbar .btn {
+    border-color: rgba(255,255,255,0.4);
+    color: #fff;
+}
+
+/* ---- Main content ---- */
+.main-content {
+    padding: 30px;
+}
+
+@media (max-width: 767.98px) {
+    .main-content { padding: 18px; }
+}
+
+/* ---- Cards ---- */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    background-color: var(--navy);
+    color: #fff;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.modal-header-navy {
+    background: var(--navy);
+    color: #fff;
+}
+
+/* ---- Stat cards ---- */
+.stat-card {
+    border-radius: 12px;
+    padding: 20px;
+    color: #fff;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.stat-card .stat-icon { font-size: 2rem; }
+.stat-card .stat-value { font-size: 1.8rem; font-weight: 700; }
+
+.bg-stat-navy  { background: var(--navy); }
+.bg-stat-teal  { background: var(--teal); }
+.bg-stat-green { background: var(--green); }
+.bg-stat-red   { background: var(--red); }
+
+/* ---- Buttons ---- */
+.btn-primary {
+    background-color: var(--navy);
+    border-color: var(--navy);
+}
+
+.btn-primary:hover {
+    background-color: var(--amber);
+    border-color: var(--amber);
+    color: var(--navy);
+}
+
+/* ---- Tables ---- */
+.table thead {
+    background-color: var(--navy);
+    color: #fff;
 }
 
 .table th {
@@ -16,30 +217,20 @@ body {
     font-size: 14px;
 }
 
-.card {
-    margin-bottom: 20px;
+.table-empty {
+    color: #8a97a5;
+    font-style: italic;
+    padding: 28px;
+    text-align: center;
 }
 
-.modal-content {
-    border: none;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
+/* ---- Badges ---- */
 .badge {
     padding: 5px 10px;
     border-radius: 20px;
     font-size: 12px;
 }
 
-.badge-present { background-color: #28a745; color: white; }
-.badge-absent  { background-color: #dc3545; color: white; }
-.badge-leave   { background-color: #ffc107; color: #333;  }
-
-.stat-card {
-    transition: transform 0.2s;
-}
-
-.stat-card:hover {
-    transform: translateY(-4px);
-}
+.badge-present { background-color: var(--green); color: #fff; }
+.badge-absent  { background-color: var(--red);   color: #fff; }
+.badge-leave   { background-color: var(--amber); color: #333; }

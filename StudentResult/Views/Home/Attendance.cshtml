@@ -1,38 +1,53 @@
 @model StudentResult.Models.StudentResultVM
 @{
     ViewData["Title"] = "Attendance";
+    var studentLabel = (Model.AllStudents ?? new List<StudentResult.Models.SrStudents>())
+        .ToDictionary(s => s.Studentid, s => $"{s.Rollno} - {s.Studentname}");
+    var classLabel = (Model.AllClasses ?? new List<StudentResult.Models.SrClasses>())
+        .ToDictionary(c => c.Classid, c => $"{c.Classname} - {c.Section}");
+    string StudentName(int? id) => id.HasValue && studentLabel.TryGetValue(id.Value, out var n) ? n : "—";
+    string ClassName(int? id) => id.HasValue && classLabel.TryGetValue(id.Value, out var n) ? n : "—";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0" style="color:#1a3c5e;">📅 Attendance</h4>
+    <h4 class="page-title mb-0">📅 Attendance</h4>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#markAttendModal">+ Mark Attendance</button>
 </div>
 
 <div class="card">
     <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-            <thead>
-                <tr>
-                    <th>Student ID</th>
-                    <th>Class ID</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var a in Model.AllAttendance)
-                {
-                    var badgeClass = a.Status == "Present" ? "badge-present" :
-                                     a.Status == "Absent"  ? "badge-absent"  : "badge-leave";
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
                     <tr>
-                        <td>@a.Studentid</td>
-                        <td>@a.Classid</td>
-                        <td>@a.Attenddate?.ToString("dd MMM yyyy")</td>
-                        <td><span class="badge @badgeClass">@a.Status</span></td>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Date</th>
+                        <th>Status</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @if (Model.AllAttendance == null || !Model.AllAttendance.Any())
+                    {
+                        <tr><td colspan="4" class="table-empty">No attendance recorded yet.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var a in Model.AllAttendance)
+                        {
+                            var badgeClass = a.Status == "Present" ? "badge-present" :
+                                             a.Status == "Absent"  ? "badge-absent"  : "badge-leave";
+                            <tr>
+                                <td>@StudentName(a.Studentid)</td>
+                                <td>@ClassName(a.Classid)</td>
+                                <td>@a.Attenddate?.ToString("dd MMM yyyy")</td>
+                                <td><span class="badge @badgeClass">@a.Status</span></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -40,11 +55,11 @@
 <div class="modal fade" id="markAttendModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header" style="background:#1a3c5e; color:white;">
+            <div class="modal-header modal-header-navy">
                 <h5 class="modal-title">Mark Attendance</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form asp-action="MarkAttendance" method="get">
+            <form asp-action="MarkAttendance" method="post">
                 <div class="modal-body">
                     <div class="mb-2">
                         <label class="form-label">Student</label>

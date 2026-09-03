@@ -1,6 +1,9 @@
 @model StudentResult.Models.StudentResultVM
 @{
     ViewData["Title"] = "My Report Card";
+    var subjectLabel = (Model.AllSubjects ?? new List<StudentResult.Models.SrSubjects>())
+        .ToDictionary(s => s.Subjectid, s => s.Subjectname);
+    string SubjectName(int? id) => id.HasValue && subjectLabel.TryGetValue(id.Value, out var n) ? n : "—";
 }
 
 @if (Model.SrStudentsObj == null)
@@ -62,7 +65,7 @@ else
                         var grade = pct >= 90 ? "A+" : pct >= 75 ? "A" : pct >= 60 ? "B" : pct >= 45 ? "C" : "F";
                         var color = pct >= 75 ? "success" : pct >= 45 ? "warning" : "danger";
                         <tr>
-                            <td>@m.Subjectid</td>
+                            <td>@SubjectName(m.Subjectid)</td>
                             <td>@m.Examtype</td>
                             <td>@m.Marksscored</td>
                             <td>@m.Totalmarks</td>

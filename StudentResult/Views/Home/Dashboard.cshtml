@@ -1,38 +1,41 @@
 @model StudentResult.Models.StudentResultVM
 @{
     ViewData["Title"] = "Dashboard";
+    var classLabel = (Model.AllClasses ?? new List<StudentResult.Models.SrClasses>())
+        .ToDictionary(c => c.Classid, c => $"{c.Classname} - {c.Section}");
+    string ClassName(int? id) => id.HasValue && classLabel.TryGetValue(id.Value, out var n) ? n : "—";
 }
 
-<h4 class="mb-4 fw-bold" style="color:#1a3c5e;">📊 Dashboard</h4>
+<h4 class="mb-4 page-title">📊 Dashboard</h4>
 
 <!-- Stat Cards -->
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="stat-card" style="background:#1a3c5e;">
-            <div style="font-size:2rem;">👨‍🎓</div>
-            <div style="font-size:1.8rem; font-weight:700;">@Model.TotalStudents</div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card bg-stat-navy">
+            <div class="stat-icon">👨‍🎓</div>
+            <div class="stat-value">@Model.TotalStudents</div>
             <div>Total Students</div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card" style="background:#2e7d9e;">
-            <div style="font-size:2rem;">🏫</div>
-            <div style="font-size:1.8rem; font-weight:700;">@Model.TotalClasses</div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card bg-stat-teal">
+            <div class="stat-icon">🏫</div>
+            <div class="stat-value">@Model.TotalClasses</div>
             <div>Classes</div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card" style="background:#28a745;">
-            <div style="font-size:2rem;">✅</div>
-            <div style="font-size:1.8rem; font-weight:700;">@Model.TotalPresent</div>
-            <div>Present Today</div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card bg-stat-green">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">@Model.TotalPresent</div>
+            <div>Present Records</div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card" style="background:#dc3545;">
-            <div style="font-size:2rem;">❌</div>
-            <div style="font-size:1.8rem; font-weight:700;">@Model.TotalAbsent</div>
-            <div>Absent Today</div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card bg-stat-red">
+            <div class="stat-icon">❌</div>
+            <div class="stat-value">@Model.TotalAbsent</div>
+            <div>Absent Records</div>
         </div>
     </div>
 </div>
@@ -43,28 +46,37 @@
         <h6 class="mb-0">Recent Students</h6>
     </div>
     <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-            <thead>
-                <tr>
-                    <th>Roll No</th>
-                    <th>Name</th>
-                    <th>Class ID</th>
-                    <th>Gender</th>
-                    <th>Contact</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var s in Model.AllStudents.Take(5))
-                {
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
                     <tr>
-                        <td><span class="badge bg-secondary">@s.Rollno</span></td>
-                        <td>@s.Studentname</td>
-                        <td>@s.Classid</td>
-                        <td>@s.Gender</td>
-                        <td>@s.Contactno</td>
+                        <th>Roll No</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Gender</th>
+                        <th>Contact</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @if (Model.AllStudents == null || !Model.AllStudents.Any())
+                    {
+                        <tr><td colspan="5" class="table-empty">No students yet.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var s in Model.AllStudents.Take(5))
+                        {
+                            <tr>
+                                <td><span class="badge bg-secondary">@s.Rollno</span></td>
+                                <td>@s.Studentname</td>
+                                <td>@ClassName(s.Classid)</td>
+                                <td>@s.Gender</td>
+                                <td>@s.Contactno</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
