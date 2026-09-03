@@ -41,6 +41,18 @@ The project began as an ASP.NET Core MVC application backed by **Oracle DB**, bu
 
 ---
 
+## Screenshots
+
+### Admin Dashboard
+![ClassLedger admin dashboard](docs/screenshots/dashboard.png)
+
+### Analytics (Reports)
+![ClassLedger analytics dashboard](docs/screenshots/reports-dashboard.png)
+
+> Images live in `docs/screenshots/`. Capture each page while logged in as Admin.
+
+---
+
 ## Architecture
 
 ```
@@ -197,12 +209,7 @@ LINQ over full tables). Every chart has its own ViewModel (see `Models/ReportsVM
 | Grade / marks distribution | What's the overall grade spread? | Mark % bucketed into A–F bands over `SR_MARKS` |
 | Avg attendance vs avg result | Does attendance correlate with results? | Per-student avg attendance % vs avg result % (scatter) |
 
-### Screenshot
-
-<!-- Replace the placeholder below with an actual screenshot of the /Reports dashboard -->
-![Analytics dashboard screenshot placeholder](docs/screenshots/reports-dashboard.png)
-
-> _Screenshot placeholder — capture the `/Reports` page while logged in as Admin and save it to `docs/screenshots/reports-dashboard.png`._
+See the [Screenshots](#screenshots) section above for the rendered dashboard.
 
 ---
 
