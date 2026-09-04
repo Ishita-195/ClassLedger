@@ -261,5 +261,7 @@ The original Oracle schema is preserved as `schema.sql` for reference.
 ## Author
 
 **Ishita Anand**
+
 B.Tech CSE, KIIT University (2023–2027)
+
 [GitHub](https://github.com/Ishita-195) · [LinkedIn](https://linkedin.com/in/ishita-anand-791770343)
