@@ -261,5 +261,9 @@ The original Oracle schema is preserved as `schema.sql` for reference.
 ## Author
 
 **Ishita Anand**
-B.Tech CSE, KIIT University (2023–2027)
-[GitHub](https://github.com/Ishita-195) · [LinkedIn](https://linkedin.com/in/ishita-anand-791770343)
+B.Tech, Computer Science & Engineering — KIIT University (2023–2027)
+
+Designed and built ClassLedger end to end — from the original ASP.NET Core MVC + Oracle internship build to the modernized, deployment-ready .NET 8 + SQLite application.
+
+- **GitHub:** [@Ishita-195](https://github.com/Ishita-195)
+- **LinkedIn:** [Ishita Anand](https://linkedin.com/in/ishita-anand-791770343)
