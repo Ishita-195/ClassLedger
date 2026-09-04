@@ -1,7 +1,5 @@
 # Screenshots
 
-Place documentation screenshots here (referenced from the main README).
-Capture each page while logged in as Admin.
+Documentation screenshots referenced from the main README.
 
-- `dashboard.png` — the main dashboard at `/Home/Dashboard`
-- `reports-dashboard.png` — the admin-only analytics dashboard at `/Reports`
+- `classledger.png` — the admin dashboard (`/Home/Dashboard`), captured while logged in as Admin

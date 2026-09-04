@@ -41,13 +41,9 @@ The project began as an ASP.NET Core MVC application backed by **Oracle DB**, bu
 
 ## Screenshots
 
-### Admin Dashboard
-![ClassLedger admin dashboard](docs/screenshots/dashboard.png)
+![ClassLedger admin dashboard](docs/screenshots/classledger.png)
 
-### Analytics (Reports)
-![ClassLedger analytics dashboard](docs/screenshots/reports-dashboard.png)
-
-> Images live in `docs/screenshots/`. Capture each page while logged in as Admin.
+> The admin dashboard — students, classes, and attendance records at a glance, with a recent-students list.
 
 ---
 
