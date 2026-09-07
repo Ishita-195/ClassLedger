@@ -245,7 +245,7 @@ rm studentresult.db     # it is recreated and re-seeded on the next run
 ## Project History
 
 ClassLedger started as an internship deliverable at **IFFCO Paradeep Limited Corporation**
-(May 2025), built with ASP.NET Core MVC and **Oracle DB** to mirror the internal tooling
+(May 2026- June 2026), built with ASP.NET Core MVC and **Oracle DB** to mirror the internal tooling
 common in corporate IT environments. It has since been modernized for portability and
 public hosting:
 
