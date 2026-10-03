@@ -22,7 +22,7 @@ A role-based web application for schools to digitize student academic records �
 
 The project began as an ASP.NET Core MVC application backed by **Oracle DB**, built during a one-month IT internship at **IFFCO Paradeep Limited Corporation** (May 2026 - June 2026). It has since been modernized to **.NET 8** with an embedded **SQLite** database, so it now runs and deploys anywhere with **zero database setup** — the schema is created and seeded automatically on first run.
 
-**Live demo:** `https://classledger.onrender.com` — hosted free on Render (the first request after idle may take ~30–50s to wake). Sign in with a demo account from the table below.
+**Live demo:** `https://classledger-k7h5.onrender.com` — hosted free on Render (the first request after idle may take ~30–50s to wake). Sign in with a demo account from the table below.
 
 ---
 
