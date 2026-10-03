@@ -3,7 +3,7 @@
 A role-based web application for schools to digitize student academic records — attendance tracking, exam marks, class/subject management, and an analytics dashboard — with separate experiences for Admins, Teachers, and Students.
 
 <p align="center">
-  <a href="https://classledger.onrender.com">
+  <a href="https://classledger-k7h5.onrender.com">
     <img src="https://img.shields.io/badge/Try_Live_Demo-Open_App-17516b?style=for-the-badge&logo=render&logoColor=white" alt="Try the live demo" />
   </a>
 </p>
